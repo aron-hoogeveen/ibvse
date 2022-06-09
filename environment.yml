@@ -1,4 +1,4 @@
-name: deja-vu
+name: ibvse
 channels:
   - pytorch
   - conda-forge
