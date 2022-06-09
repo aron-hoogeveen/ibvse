@@ -5,10 +5,14 @@
 
 **/.idea/
 
-# Ignore all image files by default (otherwise they will most likely be added
+# Ignore some image files by default (otherwise they will most likely be added
 # by accident)
 *.jpg
 *.png
+
+# Ignore some video files by default
+*.mp4
+*.mov
 
 ################################################################################
 # Feature Extraction
@@ -20,3 +24,9 @@ featureextraction/measurements/
 ################################################################################
 nearestneighbor/data/
 nearestneighbor/test_data/
+
+################################################################################
+# Keyframe Extraction
+################################################################################
+KeyFrameExtraction/VSUMM/Results/
+KeyFrameExtraction/VSUMM/Scripts/**/*.txt
