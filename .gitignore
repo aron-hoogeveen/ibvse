@@ -14,6 +14,10 @@
 *.mp4
 *.mov
 
+# Allow a place for all to place their local files that will be ignored by
+# default
+local-files/
+
 ################################################################################
 # Feature Extraction
 ################################################################################
