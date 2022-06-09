@@ -5,6 +5,12 @@
 
 **/.idea/
 
-# Ignore all jpg images by default (otherwise they will most likely be added
+# Ignore all image files by default (otherwise they will most likely be added
 # by accident)
 *.jpg
+*.png
+
+################################################################################
+# Feature Extraction
+################################################################################
+featureextraction/measurements/*
