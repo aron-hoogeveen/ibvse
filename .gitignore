@@ -1,0 +1,10 @@
+**/__pycache__/
+**/*.bin
+**/*.ann
+**/*.pth
+
+**/.idea/
+
+# Ignore all jpg images by default (otherwise they will most likely be added
+# by accident)
+*.jpg
