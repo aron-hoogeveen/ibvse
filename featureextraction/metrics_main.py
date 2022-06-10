@@ -17,7 +17,7 @@ def plot_data(data, n):
     ax.plot(data['h'], data['time'])
 
     # set figure data
-    ax.set_title(f'Feature Extraction Time vs. Resize Resolution\n16:9 Ratio for {n} randomly generated images')
+    ax.set_title(f'Time vs. Resolution')
     ax.set_xlabel('Height [px]')
     ax.set_ylabel('Time [s]')
     ax.set_xticks(data['h'])
@@ -36,7 +36,7 @@ def main():
     """
     n = 10
     size = ((123, 33), (256, 144), (320, 180), (426, 240), (640, 360), (848, 480), (960, 540), (1024, 576),
-            (1290, 720))
+            (1280, 720))
 
     data = {
         'w': [],
@@ -53,14 +53,15 @@ def main():
         _ = extract_features_global(images, s[1])
         end_time = time.time()
 
-        data['w'].append(s[1])
-        data['h'].append(s[0])
+        data['w'].append(s[0])
+        data['h'].append(s[1])
         data['time'].append((end_time - start_time)/n)
 
     data['w'].pop(0)
     data['h'].pop(0)
     data['time'].pop(0)
     plot_data(data, n)
+    print(data)
 
 
 if __name__ == '__main__':
