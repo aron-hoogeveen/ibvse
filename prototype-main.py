@@ -39,41 +39,53 @@ def parse_args():
 def main():
     args = parse_args()
 
-    # TODO make utility function for reading in images
+    start_time = time.time()  # to be sure we also save the ultimate start time
     input_image = Image.open(args.input_image)
     input_image = input_image.convert('RGB')
     input_image = np.array(input_image)
     if input_image.shape[2] == 4:  # if there is an alpha channel: disregard it
         input_image = input_image[...,:3]
 
-    kfe_start = time.time()
+    kfe_start_time = time.time()
     keyframes_data, indices, fps = keyframe_extraction(args.input_video, 'VSUMM_combi', True, True)
-    kfe_end = time.time()
+    indices = np.array(indices)
+    kfe_end_time = time.time()
 
-    fe_time_start = time.time()
-    size = 480
+    size = 576  # as determined by our timing/performance measurements
+    fe_start_time = time.time()
     search_features = extract_features_global(np.array([input_image]), size)
     frame_features = extract_features_global(keyframes_data, size)
     fe_time_end = time.time()
-    fe_time = fe_time_end - fe_time_start
-    print('>>> Done performing feature extraction')
+    fe_time = fe_time_end - fe_start_time
+
     print('>>> Performing Nearest Neighbour Search')
-    nn_time_start = time.time()
+    nn_start_time = time.time()
     idx, dist, _ = nns(frame_features, search_features)
-    nn_time_end = time.time()
-    nn_time = nn_time_end - nn_time_start
+    nn_end_time = time.time()
+    nn_time = nn_end_time - nn_start_time
     print('>>> Done performing Nearest Neighbour Search')
 
-    indices = np.array(indices)
-    print(f'The indices are:\n{indices[idx]}.\nThe distances are:\n{dist}')
+    frame_idx = indices[idx[0]]  # The frames in which the object is most likely present
+    dist = dist[0]
+    timestamps = frame_idx / fps
+    end_time = time.time()
+    total_time = end_time - start_time
 
-    save_keyframes(indices, keyframes_data)
-    kfe_time = kfe_end - kfe_start
+    print('-' * 80)
+    print(f'- Results obtained in {total_time} seconds')
+    print('-' * 80)
+    print('-')
+    print(f'- The object is found at the following timestamps:')
+    print(*[f'-\t {t} (frame {f}, dist {d})' for f, t, d in zip(frame_idx, timestamps, dist)], sep='\n')
+
+    kfe_time = kfe_end_time - kfe_start_time
     print()
     print('Timings:')
     print(f'\tKFE: {kfe_time}')
     print(f'\tFE : {fe_time}')
     print(f'\tNN : {nn_time}')
+
+    save_keyframes(indices, keyframes_data)
 
 
 if __name__ == '__main__':
