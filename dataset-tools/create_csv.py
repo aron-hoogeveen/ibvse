@@ -46,11 +46,11 @@ def main():
             # Loop over each of the search images
             # Create csv file per search image
             #
-            df_labels_txt = pd.read_csv(full_path + '/labels2img.csv')  # TODO move fixed filenames to file with constants
+            df_labels_txt = pd.read_csv(full_path + '/labels2img.csv', index_col=0)  # TODO move fixed filenames to file with constants
             df_labels = df_labels_txt.copy()
 
-            for row in df_labels_txt.iloc:
-                labels_file = full_path + '/' + row['labels']
+            for i in range(len(df_labels_txt)):
+                labels_file = full_path + '/' + df_labels_txt.at[i, 'labels']
                 if not os.path.isfile(labels_file):
                     print(f'!!! ERROR file {labels_file} does not exist. Skipping directory {full_path}.')
                     errors_occurred = True
@@ -70,8 +70,8 @@ def main():
                             if len(my_range) == 1:
                                 labels[frame_names[int(my_range[0])]] = 1
                             else:
-                                for i in range(int(my_range[0]), int(my_range[1])+1):
-                                    labels[frame_names[i]] = 1
+                                for j in range(int(my_range[0]), int(my_range[1])+1):
+                                    labels[frame_names[j]] = 1
                 except ValueError as ve:
                     print(f'!!! file "{labels_file}" has an error.')
                     print(f'Exception: {ve}')
@@ -85,8 +85,10 @@ def main():
                 s = s.reset_index()
                 df = pd.DataFrame(s)
                 file_name = os.path.splitext(os.path.basename(labels_file))[0] + '.csv'
+                df_labels.at[i, 'labels'] = file_name
                 df.to_csv(full_path + '/' + file_name)
-                print(f'\tProcessed {os.path.basename(full_path) + "/" + row["labels"]}')
+                df_labels.to_csv(full_path + '/' + 'labels.csv')
+                print(f'\tProcessed {os.path.basename(full_path) + "/" + df_labels_txt.at[i, "labels"]}')
 
     if errors_occurred:
         print('!!! There were errors. Please check the commandline log.')
