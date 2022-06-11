@@ -71,12 +71,20 @@ def main():
     end_time = time.time()
     total_time = end_time - start_time
 
+    # lin_dist = frame_features - search_features[:1]  # for now only consider the first search image
+    # lin_dist = np.linalg.norm(lin_dist, axis=1)
+    # res = np.argsort(lin_dist)
+    #
+    # lin_dist = lin_dist[res]
+
     print('-' * 80)
     print(f'- Results obtained in {total_time} seconds')
     print('-' * 80)
     print('-')
     print(f'- The object is found at the following timestamps:')
     print(*[f'-\t {t} (frame {f}, dist {d})' for f, t, d in zip(frame_idx, timestamps, dist)], sep='\n')
+    print('')
+    # print(f'The linear calculated distances are: {lin_dist}')
 
     kfe_time = kfe_end_time - kfe_start_time
     print()
