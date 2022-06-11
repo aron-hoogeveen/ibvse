@@ -62,8 +62,6 @@ def measure_perf(dirs: [str], img_dir: str, size: int = 256):
             raise ValueError(f'The path "{d}" does not exist')
         if not os.path.isfile(d + '/labels.csv'):
             raise ValueError(f'Directory "{d}" does not contain the "labels.csv" file')
-        if not os.path.isfile(d + '/search-images.csv'):
-            raise ValueError(f'Directory "{d}" does not contain the "search-images.csv" file')
         # base_name = os.path.basename(d)
         # if not os.path.isfile(d + '/' + base_name + '.jpg'):
         #     raise ValueError(f'Directory "{d}" does not contain the "{base_name}.jpg" file (check'
@@ -91,9 +89,9 @@ def measure_perf(dirs: [str], img_dir: str, size: int = 256):
 
     for d in dirs:
         # read in the search images
-        df = pd.read_csv(d + '/search-images.csv')
+        df = pd.read_csv(d + '/labels.csv')
         search_images = []
-        for img_name in df['name']:
+        for img_name in df['img']:
             img_name = os.path.expanduser(img_dir + '/' + img_name)
             img = Image.open(img_name)
             img = img.convert('RGB')
@@ -104,11 +102,15 @@ def measure_perf(dirs: [str], img_dir: str, size: int = 256):
         search_features = extract_features_global(search_images, size)
 
         # extract the features and labels of the frames
-        labels = d + '/labels.csv'
-        frame_features, frame_labels, frame_names = extract_features(d, labels, size)
-        k = int(sum(frame_labels))  # the number of theoretical hits
+        # labels = d + '/labels.csv'
+        # frame_features, frame_labels, frame_names = extract_features(d, labels, size)
+        # k = int(sum(frame_labels))  # the number of theoretical hits
 
         for idx, search_f in enumerate(search_features):
+            labels_file = d + '/' + df.at[idx, 'labels']
+            frame_features, frame_labels, frame_names = extract_features(d, labels_file, size)
+            k = int(sum(frame_labels))  # the number of theoretical hits, assuming every hit is marked with a '1'
+
             # calculate the distances and order the frames according to the distances
             dist = frame_features - search_f
             dist = np.linalg.norm(dist, axis=1)
@@ -124,7 +126,7 @@ def measure_perf(dirs: [str], img_dir: str, size: int = 256):
             ap = ap / k
 
             data['name'].append(os.path.basename(d))
-            data['search_image'].append(df['name'][idx])
+            data['search_image'].append(df['img'][idx])
             data['num_of_frames'].append(len(frame_names))
             data['ap'].append(ap)
             data['recall'].append(hits / k)
