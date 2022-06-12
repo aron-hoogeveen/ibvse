@@ -4,9 +4,10 @@ import sys
 from PIL import Image, ImageOps
 import numpy as np
 import pandas as pd
+from glob import glob
 sys.path.append(os.path.dirname(os.path.abspath('.')))
 sys.path.append(os.path.dirname(os.path.abspath('./solar/solar_global')))
-from featureextraction.fe_main import extract_features_global, extract_features
+from featureextraction.fe_main import extract_features_global, extract_features_alt
 
 
 def parse_args():
@@ -62,8 +63,6 @@ def measure_perf(dirs: [str], img_dir: str, size: int = 256):
             raise ValueError(f'The path "{d}" does not exist')
         if not os.path.isfile(d + '/labels.csv'):
             raise ValueError(f'Directory "{d}" does not contain the "labels.csv" file')
-        if not os.path.isfile(d + '/search-images.csv'):
-            raise ValueError(f'Directory "{d}" does not contain the "search-images.csv" file')
         # base_name = os.path.basename(d)
         # if not os.path.isfile(d + '/' + base_name + '.jpg'):
         #     raise ValueError(f'Directory "{d}" does not contain the "{base_name}.jpg" file (check'
@@ -91,9 +90,9 @@ def measure_perf(dirs: [str], img_dir: str, size: int = 256):
 
     for d in dirs:
         # read in the search images
-        df = pd.read_csv(d + '/search-images.csv')
+        df = pd.read_csv(d + '/labels.csv')
         search_images = []
-        for img_name in df['name']:
+        for img_name in df['img']:
             img_name = os.path.expanduser(img_dir + '/' + img_name)
             img = Image.open(img_name)
             img = img.convert('RGB')
@@ -104,15 +103,32 @@ def measure_perf(dirs: [str], img_dir: str, size: int = 256):
         search_features = extract_features_global(search_images, size)
 
         # extract the features and labels of the frames
-        labels = d + '/labels.csv'
-        frame_features, frame_labels, frame_names = extract_features(d, labels, size)
-        k = int(sum(frame_labels))  # the number of theoretical hits
+        # labels = d + '/labels.csv'
+        # frame_features, frame_labels, frame_names = extract_features(d, labels, size)
+        # k = int(sum(frame_labels))  # the number of theoretical hits
+        frame_names = list(map(lambda x: os.path.basename(x),
+                               glob(d + '/frame_*.jpg')))
+        frame_features = extract_features_alt(frame_names, size, d)
 
         for idx, search_f in enumerate(search_features):
+            labels_file = d + '/' + df.at[idx, 'labels']
+            # frame_features, frame_labels, frame_names = extract_features(d, labels_file, size)
+
+            img_labels = pd.read_csv(labels_file)
+            frame_labels = np.zeros(len(img_labels))
+            for my_idx in range(len(img_labels)):
+                frame_labels[my_idx] = img_labels.at[my_idx, 'label']
+            k = int(sum(frame_labels))  # the number of theoretical hits, assuming every hit is marked with a '1'
+
             # calculate the distances and order the frames according to the distances
+            search_f = np.array(search_f)
+            search_f = np.array([search_f])
             dist = frame_features - search_f
             dist = np.linalg.norm(dist, axis=1)
             res = np.argsort(dist)
+
+            print(f'Dist\n{dist}')
+            print(f'Res\n{res}')
 
             # calculate the average precision
             ap = 0
@@ -124,8 +140,8 @@ def measure_perf(dirs: [str], img_dir: str, size: int = 256):
             ap = ap / k
 
             data['name'].append(os.path.basename(d))
-            data['search_image'].append(df['name'][idx])
-            data['num_of_frames'].append(len(frame_names))
+            data['search_image'].append(df['img'][idx])
+            data['num_of_frames'].append(len(frame_features))
             data['ap'].append(ap)
             data['recall'].append(hits / k)
             data['k'].append(k)
