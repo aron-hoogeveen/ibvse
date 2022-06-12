@@ -12,9 +12,9 @@ def main():
 
 def test_inputs_outputs():
     # Read in test images.
-    frame_paths = (f'/home/aron/Videos/traveller-videos-sparse/videos/Battuta1/frame_{x:03d}.jpg'
-                   for x in range(0, 524))
-    image_paths = ['/home/aron/Videos/traveller-videos-sparse/images/all_images/1.png']
+    frame_paths = (f'/home/aron/Downloads/fe/test-set/ewi-tudelft-logo/frames/frame_{x:02d}.jpg'
+                   for x in range(0, 55))
+    image_paths = ['/home/aron/Downloads/fe/test-set/ewi-tudelft-logo/ewi-tudelft-logo.png']
     search_images = []
     frame_images = []
     for path in image_paths:
@@ -36,11 +36,10 @@ def test_inputs_outputs():
     frame_images = np.array(frame_images)
 
     # feed the images to the feature extraction
-    size = 128
+    size = 720
     search_features = extract_features_global(search_images, size)
     frame_features = extract_features_global(frame_images, size)
 
-    search_f = search_features[:1]
     dist = frame_features - search_features[:1]  # for now only consider the first search image
     dist = np.linalg.norm(dist, axis=1)
     res = np.argsort(dist)

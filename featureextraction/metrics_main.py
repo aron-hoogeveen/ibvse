@@ -21,6 +21,7 @@ def plot_data(data, n):
     ax.set_xlabel('Height [px]')
     ax.set_ylabel('Time [s]')
     ax.set_xticks(data['h'])
+    ax.set_yticks(list(round(x, 2) for x in data['time']))
     plt.xlim([min(data['h']), max(data['h'])])
     plt.ylim([min(data['time']), max(data['time'])])
     # TODO W x H xticklabels
@@ -34,9 +35,10 @@ def main():
 
     Use 16:9 aspect ratio. WxH
     """
-    n = 10
+    n = 50  # the more iterations the better, because then the loading time for the network disappears
     size = ((123, 33), (256, 144), (320, 180), (426, 240), (640, 360), (848, 480), (960, 540), (1024, 576),
             (1280, 720))
+    # size = ((123, 33), (256, 144), (320, 180))
 
     data = {
         'w': [],
