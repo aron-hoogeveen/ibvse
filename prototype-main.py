@@ -40,6 +40,7 @@ def main():
     args = parse_args()
 
     start_time = time.time()  # to be sure we also save the ultimate start time
+
     input_image = Image.open(args.input_image)
     input_image = input_image.convert('RGB')
     input_image = np.array(input_image)
@@ -71,17 +72,11 @@ def main():
     end_time = time.time()
     total_time = end_time - start_time
 
-    # lin_dist = frame_features - search_features[:1]  # for now only consider the first search image
-    # lin_dist = np.linalg.norm(lin_dist, axis=1)
-    # res = np.argsort(lin_dist)
-    #
-    # lin_dist = lin_dist[res]
-
     print('-' * 80)
     print(f'- Results obtained in {total_time} seconds')
     print('-' * 80)
     print('-')
-    print(f'- The object is found at the following timestamps:')
+    print(f'- The following timestamps were returned:')
     print(*[f'-\t {t} (frame {f}, dist {d})' for f, t, d in zip(frame_idx, timestamps, dist)], sep='\n')
     print('')
     # print(f'The linear calculated distances are: {lin_dist}')
@@ -93,7 +88,7 @@ def main():
     print(f'\tFE : {fe_time}')
     print(f'\tNN : {nn_time}')
 
-    save_keyframes(indices, keyframes_data)
+    save_keyframes(indices, keyframes_data)  # save the individual frames to disk for manual checking
 
 
 if __name__ == '__main__':
