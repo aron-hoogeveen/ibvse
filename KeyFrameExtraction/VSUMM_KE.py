@@ -19,18 +19,15 @@ from sklearn.cluster import KMeans
 # Argument 5: 1: if want to save keyframes 
 # Argument 6: 1: if want to save the frame indices
 # Argument 7: directory where keyframes will be saved
-def VSUMM(descriptors, shot_frame_number, presample, skip_num):
+def VSUMM(descriptors, shot_frame_number):
 	# defines the number of bins for pixel values of each type {r,g,b}
 	#D
 
 	# size of values in each bin
 	#range_per_bin = 256 / num_bins
 
-	if presample:
-		percent = int(3*skip_num)
-	else:
-		percent = int(3)
-
+	# number of centroids
+	percent = int(2)
 	#global num_bins, sampling_rate, percent, num_centroids
 	# print ("Opening video!")
 	# video=imageio.get_reader(sys.argv[1])
@@ -78,7 +75,7 @@ def VSUMM(descriptors, shot_frame_number, presample, skip_num):
 
 	kmeans=KMeans(n_clusters=num_centroids).fit(descriptors)
 	kmeans2 = KMeans(n_clusters=num_centroids).fit_predict(descriptors)
-	#print(kmeans2)
+	print(kmeans2)
 
 	summary_frames=[]
 

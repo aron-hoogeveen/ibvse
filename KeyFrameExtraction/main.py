@@ -4,7 +4,7 @@ import time
 # from SBD import *
 import numpy as np
 
-from Gen_SBD import *
+from Gen_SBD_test import *
 
 
 def save_keyframes(keyframe_indices, frames_data):
@@ -21,7 +21,6 @@ def save_keyframes(keyframe_indices, frames_data):
         #print("Extracting frame " + str(keyframe_indices[i]))
         name = savepath + '/' + str(keyframe_indices[i]) + '.jpg'
         cv2.imwrite(name, frame_rgb)
-
 
 def keyframe_extraction(video_path, method, performSBD, presample):
     print("Opening video: " + video_path)
@@ -68,7 +67,7 @@ def KE_uniform_sampling(video_path, rate, CR):
     else:
         skip_num = 1/(1-CR)
 
-    keyframes_idx = [i for i in range(frame_count) if int(i % skip_num) == 0]
+    keyframes_idx = [i for i in range(frame_count-1) if int(i % skip_num) == 0]
     print('\033[93m' + f'Time to select indices with uniform sampling: {time.time()-method_time}'+ '\033[0m')
     keyframes_data = keyframes_indices_to_array(keyframes_idx, video_path, video_fps, frame_count)
 
@@ -148,29 +147,17 @@ def print_statistics(frame_count, video_fps, keyframes_idx):
     print("Compression Ratio: " + str(compression))
 
 
-
-# def keyframes_indices_to_array(indices, path):
-#     frames = []
-#     cap = cv2.VideoCapture(path)
-#     for i in range(0, len(indices)):
-#         cap.set(cv2.CAP_PROP_POS_FRAMES, indices[i])
-#         _, frame = cap.read()
-#         frames.append(frame)
-#     return frames
-
-
 if __name__ == '__main__':
     print("Path:")
     print(sys.argv[1])
     kfe_time  = time.time()
     # methods: crudehistogram, firstmiddlelast, firstlast, firstonly, histogramblockclustering, shotdependentsampling
-    #           VSUMM, VSUMM_combi
-    KE_method = "VSUMM"
+    #           VSUMM, VSUMM_combi, colormoments
+    KE_method = "firstonly"
     performSBD = True
-    presample = True
+    presample = False
     keyframes_data, keyframe_indices, video_fps = keyframe_extraction(sys.argv[1], KE_method, performSBD, presample)
     #keyframes_data, keyframe_indices, video_fps = KE_uniform_sampling(sys.argv[1], 0.5, 0.85)
     #keyframes_data, keyframe_indices, video_fps = fast_uniform_sampling(sys.argv[1], 5, 0.85)
-
     print('\033[92m' + f' Total KeyframeExtraction time: {time.time()-kfe_time}'+ '\033[0m')
-    save_keyframes(keyframe_indices, keyframes_data)
+    #save_keyframes(keyframe_indices, keyframes_data)

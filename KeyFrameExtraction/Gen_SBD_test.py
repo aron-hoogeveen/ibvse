@@ -24,7 +24,7 @@ class shotDetector(object):
     def __init__(self, min_duration=__min_duration__, output_dir=None):
         self.min_duration = min_duration
         self.output_dir = output_dir
-        self.factor = 5
+        self.factor = 2
         self.n_frames = 0
         self.method_descriptors = []
         
@@ -58,7 +58,6 @@ class shotDetector(object):
                 count += 1
         else:
             while True:
-
                 success, frame = cap.read()
                 if not success:
                     break
@@ -72,14 +71,6 @@ class shotDetector(object):
         # compute hist  distances
         self.scores = [np.ndarray.sum(abs(pair[0] - pair[1])) for pair in zip(hists[1:], hists[:-1])]
 
-        # conv = np.ones(5)
-        # diffconv = np.convolve(self.scores, conv) / 2
-        #
-        #
-        # plt.plot(range(len(self.scores)), self.scores,
-        #          label='Frame difference')  # , range(len(diffconv)),diffconv, meane, pt)
-        # plt.plot(range(len(diffconv)), diffconv, label='CFAR threshold')
-        # plt.show()
         return totalpixels
 
     def pick_frame(self, method):
@@ -229,14 +220,65 @@ def SBD(cap, method, performSBD, presample, video_fps):
         shot_boundary = []
         shot_boundary.append(0)
         shot_boundary.append(frame_count)
-        print(shot_boundary)
         print('\033[94m' + f'Time to read (presampled) video and  generate descriptors for chosen method: {time.time() - time_SBD}' + '\033[0m')
 
     else: #  perform SBD
-        detector = shotDetector()
-        totalpixels = detector.run(method, cap, presample, skip_num)
+        # detector = shotDetector()
+        # totalpixels = detector.run(method, cap, presample, skip_num)
+        #
+        # shot_boundary, method_descriptors = detector.pick_frame(method)
 
-        shot_boundary, method_descriptors = detector.pick_frame(method)
+        width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+        height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+        quotient = 256 * width * height
+        totalpixels = width*height
+
+        shot_boundary = []
+        shot_boundary.append(0)
+        factor = 2
+        framediff = []
+        method_descriptors = []
+
+        success, old_frame = cap.read()
+        method_descriptors.append(createDescriptor(method, old_frame))
+
+        old_frame = cv2.cvtColor(old_frame, cv2.COLOR_BGR2GRAY)
+
+        start_time = time.time()
+        success, frame = cap.read()
+        n_frames = 1
+        while success:
+            method_descriptors.append(createDescriptor(method, frame))
+
+            frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+            frame_old = np.array(old_frame)/quotient
+            frame_new = np.array(frame_gray)/quotient
+
+            #framediff.append(np.sum(np.abs(np.subtract(frame_new, frame_old))))
+            framediff.append(np.abs(np.sum(frame_new) - np.sum(frame_old)))
+            old_frame = frame_gray
+
+            success, frame = cap.read()
+            n_frames += 1
+        print("--- %s seconds ---" % (time.time() - start_time))
+        mean_diff = sum(framediff) / len(framediff)
+        threshold_diff = factor * mean_diff
+
+        conv = np.ones(5)
+        diffconv = np.convolve(framediff, conv) / 2
+
+        for j in range(len(framediff)):
+            if threshold_diff > diffconv[j]:
+                convthresh=threshold_diff
+            else:
+                convthresh=diffconv[j]
+
+            if framediff[j] >= convthresh:
+                shot_boundary.append(j+1)
+
+        shot_boundary.append(n_frames)
+        shot_boundary = np.array(shot_boundary)
 
         if presample:
             actual_shot_boundary = [round(element * skip_num) for element in shot_boundary]

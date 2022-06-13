@@ -14,26 +14,36 @@ print("Path:")
 print(sys.argv[1])
 
 cap = cv2.VideoCapture(sys.argv[1])
-success, old_frame = cap.read()
-old_frame = cv2.cvtColor(old_frame, cv2.COLOR_BGR2GRAY)
-width = len(old_frame)
-height = len(old_frame[0])
+success, frame = cap.read()
+frame_rgb = frame
 
-print(old_frame.shape)
+# dividing a frame into 3*3 i.e 9 blocks
+height, width, channels = frame_rgb.shape
 
-sum = 0;
-for i in range(0,720):
-    for j in range(0, 1280):
-        sum += old_frame[i][j]
+if height % 3 == 0:
+    h_chunk = int(height / 3)
+else:
+    h_chunk = int(height / 3) + 1
+if width % 3 == 0:
+    w_chunk = int(width / 3)
+else:
+    w_chunk = int(width / 3) + 1
+h = 0
+w = 0
+feature_vector = []
+for a in range(1, 4):
+    h_window = h_chunk * a
+    for b in range(1, 4):
+        frame = frame_rgb[h: h_window, w: w_chunk * b, :]
+        hist = cv2.calcHist(frame, [0, 1, 2], None, [6, 6, 6],
+                            [0, 256, 0, 256, 0, 256])  # finding histograms for each block
 
-print(sum)
-print(np.sum(old_frame))
-frame1 = np.array(old_frame,'int')
+        hist1 = hist.flatten()  # flatten the hist to one-dimensinal vector
+        print(hist1.shape)
+        feature_vector += list(hist1)
+        w = w_chunk * b
 
-#frame_diff = np.subtract(frame1,frame2)
-#frame_diff = np.abs(frame_diff)
-# for x in range(0, height):
-#     for y in range(0, width):
+    h = h_chunk * a
+    w = 0
 
-#framesubstract = np.abs(np.sum(frame1) - np.sum(frame2))
-#frame_diff_rat = frame_sum/256/len(frame1)/len(frame1[0])
+descriptor = feature_vector  # M = 1944 one dimensional feature vector for frame

@@ -24,7 +24,7 @@ class shotDetector(object):
     def __init__(self, min_duration=__min_duration__, output_dir=None):
         self.min_duration = min_duration
         self.output_dir = output_dir
-        self.factor = 5
+        self.factor = 3
         self.n_frames = 0
         self.method_descriptors = []
         
@@ -72,29 +72,35 @@ class shotDetector(object):
         # compute hist  distances
         self.scores = [np.ndarray.sum(abs(pair[0] - pair[1])) for pair in zip(hists[1:], hists[:-1])]
 
-        # conv = np.ones(5)
-        # diffconv = np.convolve(self.scores, conv) / 2
-        #
-        #
-        # plt.plot(range(len(self.scores)), self.scores,
-        #          label='Frame difference')  # , range(len(diffconv)),diffconv, meane, pt)
-        # plt.plot(range(len(diffconv)), diffconv, label='CFAR threshold')
-        # plt.show()
         return totalpixels
 
     def pick_frame(self, method):
+
+        conv = np.ones(5)
+        diffconv = np.convolve(self.scores, conv) / 2
+        conv2 = np.ones(30)
+        diffconv2 = np.convolve(self.scores, conv) / 20
         average_frame_div = sum(self.scores)/len(self.scores)
+
+        convthresh = []
+        for j in range(len(self.scores)):
+            if self.factor * average_frame_div > diffconv[j]:
+                convthresh.append(self.factor *average_frame_div)
+            else:
+                convthresh.append(diffconv[j])
+
+
+        plt.plot(range(len(self.scores)), self.scores,
+                 label='Frame difference')  # , range(len(diffconv)),diffconv, meane, pt)
+        plt.plot(range(len(convthresh)), convthresh, label='CFAR threshold')
+        plt.plot(range(len(diffconv2)), diffconv2, label='CFAR threshol')
+        plt.show()
+
+
         self.frame_index = []
         for idx in range(len(self.scores)):
-            if self.scores[idx] > self.factor * average_frame_div:
+            if self.scores[idx] > convthresh[idx]:
                 self.frame_index.append(idx)
-                
-
-        tmp_idx = copy.copy(self.frame_index)
-        for i in range(0, len(self.frame_index) - 1):
-            if self.frame_index[i + 1] - self.frame_index[i] < __min_duration__:
-                del tmp_idx[tmp_idx.index(self.frame_index[i])]
-        self.frame_index = tmp_idx
 
         # the real index start from 1 but time 0 and end add to it
         idx_new = copy.copy(self.frame_index)

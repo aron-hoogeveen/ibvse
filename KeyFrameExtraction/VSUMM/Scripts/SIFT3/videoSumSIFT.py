@@ -21,15 +21,15 @@ ColorMoments = namedtuple('ColorMoments', ['mean', 'stdDeviation', 'skewness'])
 
 def getColorMoments(histogram, totalPixels):
     sum = 0
-    for pixels in histogram:
-        sum += pixels
+    for i in range(len(histogram)):
+        sum += i*histogram[i]
     test = np.array(histogram)
     test = np.sum(test)
-    print(totalPixels)
-    print(sum-test)
-    print("ja")
-    print(sum)
+
     mean = float (sum / totalPixels)
+    print(mean)
+
+
     sumOfSquares = 0
     sumOfCubes = 0
     for pixels in histogram:
@@ -73,12 +73,10 @@ def main():
     while success:
         grayImage = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         histogram = cv2.calcHist([grayImage],[0],None,[256],[0,256])
-        print("GG")
-       # print(histogram)
+
 
         colorMoments = getColorMoments(histogram, totalPixels)
-        print(colorMoments)
-    #    print(len(colorMoments[0]))
+
         if i==0:
             euclideanDistance.append(0)
         else:
@@ -91,11 +89,19 @@ def main():
         # Uncomment this for breaking early i.e. 100 frames
         # if i==50:
         #     break
+    factor = 5
+    meanEuclideanDistance = sum(euclideanDistance[1:]) / float(len(euclideanDistance)-1)
+    thresholdEuclideanDistance = max(factor * meanEuclideanDistance, euclideanDistance)
 
-    perc = 0.05
-    keyFramesIndices = sorted(np.argsort(euclideanDistance)[::-1][:int(i*perc)])
+    keyFramesIndices = []
+    for i in range(len(euclideanDistance)):
+        if euclideanDistance[i] > thresholdEuclideanDistance:
+            keyFramesIndices.append(i)
+
+    # perc = 0.05
+    # keyFramesIndices = sorted(np.argsort(euclideanDistance)[::-1][:int(i*perc)])
     print(keyFramesIndices)
-    save_keyframes(keyFramesIndices)
+    #save_keyframes(keyFramesIndices)
     
     print ('Time taken to run =', time.perf_counter() - t0, 'seconds' )
 

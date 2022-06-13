@@ -44,10 +44,20 @@ def first_last(descriptors, shot_start_number):
     return indices
 
 def first_only(descriptors, shot_start_number):
-    print('Selecting first frame from shot')
+    #print('Selecting first frame from shot')
     indices = [shot_start_number]
     return indices
 
 def shotdependent_sampling(descriptors, shot_start_number):
     indices = [shot_start_number]
     return indices
+
+def changeIdxFormat(indices, frame_count):
+    print("Converting KF selection [a, b, c, ..., d] to [0, 0, 1, 0 ... 1 ] ")
+    #summary_selections = np.random.random((n_frames, 1)) * 100
+    #val_percentile = np.percentile(summary_selections, compression)
+    sumsel = np.zeros([frame_count, 1])
+    for keyframe in indices:
+        sumsel[keyframe] = 1
+    return sumsel
+

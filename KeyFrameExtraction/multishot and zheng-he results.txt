@@ -1,0 +1,240 @@
+C:\Users\Robert\bin\multishot.mp4
+uniform_sampling
+	PerformSBD: False
+	Presample: False
+Comptime (n=10): 1.06	Comptime/dur: 0.035	KF: 150	CR: 83.3518	Fidelity: 0.885
+
+	PerformSBD: False
+	Presample: True
+Comptime (n=10): 1.31	Comptime/dur: 0.043	KF: 150	CR: 83.3518	Fidelity: 0.885
+
+	PerformSBD: True
+	Presample: False
+Comptime (n=10): 1.02	Comptime/dur: 0.034	KF: 150	CR: 83.3518	Fidelity: 0.885
+
+	PerformSBD: True
+	Presample: True
+Comptime (n=10): 1.02	Comptime/dur: 0.034	KF: 150	CR: 83.3518	Fidelity: 0.885
+
+uniform_sampling_small
+	PerformSBD: False
+	Presample: False
+Comptime (n=10): 0.53	Comptime/dur: 0.018	KF: 18	CR: 98.0022	Fidelity: 0.6954
+
+	PerformSBD: False
+	Presample: True
+Comptime (n=10): 0.54	Comptime/dur: 0.018	KF: 18	CR: 98.0022	Fidelity: 0.6954
+
+	PerformSBD: True
+	Presample: False
+Comptime (n=10): 0.53	Comptime/dur: 0.018	KF: 18	CR: 98.0022	Fidelity: 0.6954
+
+	PerformSBD: True
+	Presample: True
+Comptime (n=10): 0.54	Comptime/dur: 0.018	KF: 18	CR: 98.0022	Fidelity: 0.6954
+
+crudehistogram
+	PerformSBD: False
+	Presample: False
+Comptime (n=10): 6.55	Comptime/dur: 0.218	KF: 33	CR: 96.3374	Fidelity: 0.7556
+
+	PerformSBD: False
+	Presample: True
+Comptime (n=10): 2.97	Comptime/dur: 0.099	KF: 32	CR: 96.4484	Fidelity: 0.7151
+
+	PerformSBD: True
+	Presample: False
+Comptime (n=10): 8.38	Comptime/dur: 0.279	KF: 33	CR: 96.3374	Fidelity: 0.7556
+
+	PerformSBD: True
+	Presample: True
+Comptime (n=10): 3.63	Comptime/dur: 0.121	KF: 32	CR: 96.4484	Fidelity: 0.7151
+
+histogramblockclustering
+	PerformSBD: False
+	Presample: False
+Comptime (n=10): 7.76	Comptime/dur: 0.258	KF: 32	CR: 96.4484	Fidelity: 0.752
+
+	PerformSBD: False
+	Presample: True
+Comptime (n=10): 2.66	Comptime/dur: 0.088	KF: 19	CR: 97.8912	Fidelity: 0.6697
+
+	PerformSBD: True
+	Presample: False
+Comptime (n=10): 7.79	Comptime/dur: 0.259	KF: 32	CR: 96.4484	Fidelity: 0.752
+
+	PerformSBD: True
+	Presample: True
+Comptime (n=10): 3.13	Comptime/dur: 0.104	KF: 19	CR: 97.8912	Fidelity: 0.6697
+
+VSUMM
+	PerformSBD: False
+	Presample: False
+Comptime (n=10): 5.68	Comptime/dur: 0.189	KF: 17	CR: 98.1132	Fidelity: 0.6618
+
+	PerformSBD: False
+	Presample: True
+Comptime (n=10): 2.19	Comptime/dur: 0.073	KF: 5	CR: 99.4451	Fidelity: 0.3887
+
+	PerformSBD: True
+	Presample: False
+Comptime (n=10): 7.66	Comptime/dur: 0.255	KF: 16	CR: 98.2242	Fidelity: 0.6618
+
+	PerformSBD: True
+	Presample: True
+Comptime (n=10): 2.91	Comptime/dur: 0.097	KF: 7	CR: 99.2231	Fidelity: 0.6319
+
+VSUMM_combi
+	PerformSBD: False
+	Presample: False
+Comptime (n=10): 6.44	Comptime/dur: 0.214	KF: 29	CR: 96.7814	Fidelity: 0.7053
+
+	PerformSBD: False
+	Presample: True
+Comptime (n=10): 2.92	Comptime/dur: 0.097	KF: 21	CR: 97.6693	Fidelity: 0.7087
+
+	PerformSBD: True
+	Presample: False
+Comptime (n=10): 8.15	Comptime/dur: 0.271	KF: 28	CR: 96.8923	Fidelity: 0.7224
+
+	PerformSBD: True
+	Presample: True
+Comptime (n=10): 3.55	Comptime/dur: 0.118	KF: 23	CR: 97.4473	Fidelity: 0.7605
+
+colormoments
+	PerformSBD: False
+	Presample: False
+Comptime (n=10): 5.65	Comptime/dur: 0.188	KF: 17	CR: 98.1132	Fidelity: 0.3557
+
+	PerformSBD: False
+	Presample: True
+Comptime (n=10): 2.25	Comptime/dur: 0.075	KF: 5	CR: 99.4451	Fidelity: 0.203
+
+	PerformSBD: True
+	Presample: False
+Comptime (n=10): 7.51	Comptime/dur: 0.25	KF: 16	CR: 98.2242	Fidelity: 0.6219
+
+	PerformSBD: True
+	Presample: True
+Comptime (n=10): 2.83	Comptime/dur: 0.094	KF: 5	CR: 99.4451	Fidelity: 0.3654
+
+C:\Users\Robert\bin\zheng-he.mp4
+uniform_sampling
+	PerformSBD: False
+	Presample: False
+Comptime (n=10): 0.97	Comptime/dur: 0.032	KF: 150	CR: 83.3333	Fidelity: 0.8275
+
+	PerformSBD: False
+	Presample: True
+Comptime (n=10): 0.99	Comptime/dur: 0.033	KF: 150	CR: 83.3333	Fidelity: 0.8275
+
+	PerformSBD: True
+	Presample: False
+Comptime (n=10): 0.98	Comptime/dur: 0.033	KF: 150	CR: 83.3333	Fidelity: 0.8275
+
+	PerformSBD: True
+	Presample: True
+Comptime (n=10): 1.0	Comptime/dur: 0.033	KF: 150	CR: 83.3333	Fidelity: 0.8275
+
+uniform_sampling_small
+	PerformSBD: False
+	Presample: False
+Comptime (n=10): 0.5	Comptime/dur: 0.017	KF: 18	CR: 98.0	Fidelity: 0.6343
+
+	PerformSBD: False
+	Presample: True
+Comptime (n=10): 0.5	Comptime/dur: 0.017	KF: 18	CR: 98.0	Fidelity: 0.6343
+
+	PerformSBD: True
+	Presample: False
+Comptime (n=10): 0.51	Comptime/dur: 0.017	KF: 18	CR: 98.0	Fidelity: 0.6343
+
+	PerformSBD: True
+	Presample: True
+Comptime (n=10): 0.5	Comptime/dur: 0.017	KF: 18	CR: 98.0	Fidelity: 0.6343
+
+crudehistogram
+	PerformSBD: False
+	Presample: False
+Comptime (n=10): 6.34	Comptime/dur: 0.211	KF: 37	CR: 95.8889	Fidelity: 0.8367
+
+	PerformSBD: False
+	Presample: True
+Comptime (n=10): 2.81	Comptime/dur: 0.094	KF: 28	CR: 96.8889	Fidelity: 0.7783
+
+	PerformSBD: True
+	Presample: False
+Comptime (n=10): 8.62	Comptime/dur: 0.287	KF: 35	CR: 96.1111	Fidelity: 0.8436
+
+	PerformSBD: True
+	Presample: True
+Comptime (n=10): 3.67	Comptime/dur: 0.122	KF: 27	CR: 97.0	Fidelity: 0.7783
+
+histogramblockclustering
+	PerformSBD: False
+	Presample: False
+Comptime (n=10): 7.04	Comptime/dur: 0.234	KF: 9	CR: 99.0	Fidelity: 0.4608
+
+	PerformSBD: False
+	Presample: True
+Comptime (n=10): 2.32	Comptime/dur: 0.077	KF: 9	CR: 99.0	Fidelity: 0.4401
+
+	PerformSBD: True
+	Presample: False
+Comptime (n=10): 7.48	Comptime/dur: 0.249	KF: 14	CR: 98.4444	Fidelity: 0.7649
+
+	PerformSBD: True
+	Presample: True
+Comptime (n=10): 3.01	Comptime/dur: 0.1	KF: 12	CR: 98.6667	Fidelity: 0.677
+
+VSUMM
+	PerformSBD: False
+	Presample: False
+Comptime (n=10): 5.97	Comptime/dur: 0.199	KF: 17	CR: 98.1111	Fidelity: 0.7309
+
+	PerformSBD: False
+	Presample: True
+Comptime (n=10): 2.32	Comptime/dur: 0.077	KF: 5	CR: 99.4444	Fidelity: 0.477
+
+	PerformSBD: True
+	Presample: False
+Comptime (n=10): 8.25	Comptime/dur: 0.275	KF: 15	CR: 98.3333	Fidelity: 0.6796
+
+	PerformSBD: True
+	Presample: True
+Comptime (n=10): 3.2	Comptime/dur: 0.106	KF: 8	CR: 99.1111	Fidelity: 0.5697
+
+VSUMM_combi
+	PerformSBD: False
+	Presample: False
+Comptime (n=10): 6.75	Comptime/dur: 0.225	KF: 38	CR: 95.7778	Fidelity: 0.8175
+
+	PerformSBD: False
+	Presample: True
+Comptime (n=10): 2.96	Comptime/dur: 0.099	KF: 25	CR: 97.2222	Fidelity: 0.8064
+
+	PerformSBD: True
+	Presample: False
+Comptime (n=10): 8.84	Comptime/dur: 0.294	KF: 39	CR: 95.6667	Fidelity: 0.8175
+
+	PerformSBD: True
+	Presample: True
+Comptime (n=10): 3.83	Comptime/dur: 0.127	KF: 22	CR: 97.5556	Fidelity: 0.7138
+
+colormoments
+	PerformSBD: False
+	Presample: False
+Comptime (n=10): 5.59	Comptime/dur: 0.186	KF: 10	CR: 98.8889	Fidelity: 0.5647
+
+	PerformSBD: False
+	Presample: True
+Comptime (n=10): 2.21	Comptime/dur: 0.074	KF: 5	CR: 99.4444	Fidelity: 0.4222
+
+	PerformSBD: True
+	Presample: False
+Comptime (n=10): 7.86	Comptime/dur: 0.262	KF: 12	CR: 98.6667	Fidelity: 0.6468
+
+	PerformSBD: True
+	Presample: True
+Comptime (n=10): 3.07	Comptime/dur: 0.102	KF: 5	CR: 99.4444	Fidelity: 0.6069
+
