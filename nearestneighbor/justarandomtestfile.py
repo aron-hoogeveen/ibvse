@@ -1,92 +1,66 @@
-# def searchk():
-#     # init = True
-#     # for ef in range(0,100,50):
-#     #     for ef_const in range(0,100,50):
-#     #         build_time, start_time, total_time, mAP = nn_main.nns(frame_features, image_features, args.method, args.k, args.forest_size,
-#     #         args.annoy_metric, f, args.batch_size, ef, ef_const)
-#     #         df = pd.DataFrame({"build_time": build_time, "search_time": start_time, "total_time": total_time, "mAP": mAP, "ef": ef, "ef_const": ef_const}, index=[0])
-#     #         df.to_csv((os.path.abspath(r'data/ef_res.csv')), mode='a', header=init)
-#     #         init = False
-#     start_time = time.process_time()
-#     nn_annoy.annoy_build_tree(frame_features, args.forest_size, args.annoy_metric, 'AnnoyTree')  # Build the network
-#     build_time = time.process_time()
-#     init = True
-#     for search_k in range(0, 1000, 50):
-#         start_search = time.process_time()
-#         nns_res = nn_annoy.annoy_search(image_features, args.annoy_metric, 'AnnoyTree', args.k, search_k)  # Search the network
-#         search_time = time.process_time()-start_search
-#         total_time = build_time - start_time + search_time
-#         mAP = nn_main.cal_mAP(nns_res, frame_labels, image_labels)
-#         df = pd.DataFrame({"build_time": build_time, "search_time": search_time, "total_time": total_time, "mAP": mAP}, index=[0])
-#         df.to_csv((os.path.abspath(r'data/ef_res.csv')), mode='a', header=init)
-#         init = False
-#
-# def framevstime(frame_features, image_features, method, k, frame_labels, image_labels):
-#     init = True
-#     for i in range(100,50000, 100):
-#         r_frames = np.random.choice(len(frame_features), i, False)
-#         r_images = np.random.choice(len(image_features), 1, False)
-#         frame_cut = frame_features[r_frames]
-#         image_cut = image_features[r_images]
-#         labelf_cut = frame_labels[r_frames]
-#         labeli_cut = image_labels[r_images]
-#
-#         build_time, search_time, total_time, mAP = nn_main.nns(frame_cut, image_cut, method, k, frame_labels = labelf_cut, image_labels = labeli_cut, hnsw_batch_size=100)
-#         df = pd.DataFrame({"build_time": build_time, "search_time": search_time, "total_time": total_time, "mAP": mAP},
-#                           index=[0])
-#         df.to_csv((os.path.abspath(r'data/ef_res2.csv')), mode='a', header=init)
-#         init = False
-#
-#
-# def frametimeplot():
-#     df = pd.read_csv(os.path.abspath(r'data/ef_res2.csv'))
-#     df1 = df[['total_time']]
-#     ls = np.arange(100, 50000, 100)
-#     plt.plot(ls,df1, 'r.')
-#     plt.savefig('data/hnswbatchsearchtime.png')
-#     plt.show()
-#
-#
-# def HNSWspeedtest():
-#     init = True
-#     build = 0
-#     search_a = []
-#     mAP_a = []
-#     for i in range(1, 10, 1):
-#         frame_features = np.load((os.path.abspath(r'data/embedded_features.npy')))
-#         image_features = np.load((os.path.abspath(r'data/embedded_features_test.npy')))[:10, :].reshape(10, 4096)
-#         labels = np.load((os.path.abspath(r'data/labels.npy')))
-#         labels_test = np.load((os.path.abspath(r'data/labels_test.npy')))[:10]
-#         build_time, search, _, mAP = nn_main.nns(frame_features, image_features, "hnsw", 100,
-#                                                 hnsw_dim=4096, frame_labels=labels, image_labels=labels_test, build = init)
-#         search_a.append(search)
-#         mAP_a.append(mAP)
-#         print(f'Run {i} out of 100')
-#         if init:
-#             build = build_time
-#             init = False
-#
-#     print(build)
-#     ls = np.arange(1, 200, 2)
-#     plt.figure(1)
-#     plt.plot(ls, mAP_a, 'r.')
-#     plt.savefig('data/aaaaaaaa.png')
-#
-#     plt.figure(2)
-#     ls = np.arange(1, 200, 2)
-#     plt.plot(ls, search_a, 'r.')
-#     plt.savefig('data/aaaaaaaa1.png')
-# import numpy as np
-# print(np.linspace(0.1,25,25))
-# print(np.logspace(np.log10(0.1),np.log10(25),25))
-#import faiss
-# faiss.index_cpu_to_gpu()
+from scipy.interpolate import NearestNDInterpolator
+import matplotlib.pyplot as plt
 import numpy as np
 
+def method_selector(n_frames_inter, n_queries_inter):
+    methods = ["linear", "faiss_flat_cpu", "faiss_flat_gpu", "faiss_hnsw", "faiss_lsh","faiss_ivf"]
+    n_frames_inter = max(271, min(n_frames_inter, 50000))
+    n_queries_inter = min(n_queries_inter, 1000)
+
+    method_idx = np.load(r".\test_data\interp_data.npy", allow_pickle=True)
+    queries = np.array([np.arange(270,4050, 270)])
+    queries = np.append(queries, np.array([np.arange(4050,50000,4050)]))
+    queries = np.append(queries, 50000)
+
+    n_frames = np.array( [[queries[0]]*1000,[queries[1]]*1000,[queries[2]]*1000,[queries[3]]*1000,[queries[4]]*1000,
+                         [queries[5]]*1000,[queries[6]]*1000,[queries[7]]*1000,[queries[8]]*1000,[queries[9]]*1000,
+                         [queries[10]]*1000,[queries[11]]*1000,[queries[12]]*1000,[queries[13]]*1000,[queries[14]]*1000,
+                         [queries[15]]*1000,[queries[16]]*1000,[queries[17]]*1000,[queries[18]]*1000,[queries[19]]*1000,
+                         [queries[20]]*1000,[queries[21]]*1000,[queries[22]]*1000,[queries[23]]*1000,[queries[24]]*1000,[queries[25]]*1000,[queries[26]]*1000]).flatten()
+    n_queries = np.array([range(1, 1001)]*27).flatten()
 
 
+    interpolfunc_method = NearestNDInterpolator((n_queries, n_frames), method_idx)
+    pts = np.array([n_queries_inter, n_frames_inter])
+    interp_res = round(interpolfunc_method(pts)[0])
+
+    assert interp_res != -1
 
 
+    return methods[interp_res]
 
+import matplotlib as mpl
+if __name__ == "__main__":
+    # queries  = [322, 506, 123, 75, 661, 838, 565, 2, 448, 588]
+    # frames  = [15519, 44, 28959, 9806, 41357, 23857, 6924, 7993, 3192, 932]
+    # for query,frame in zip(queries,frames):
+    #     print(f"{query}, {frame}: {method_selector(frame,query)}")
+    methods = ["linear", "faiss_flat_cpu", "faiss_flat_gpu", "faiss_hnsw", "faiss_lsh", "faiss_ivf"]
+    datax = []
+    datay_sub = []
+    datay = []
+    data = []
+    Z = []
+    total = []
+    for i in range(1, 50002, 500):
+        data = []
+        for j in range(1, 1002, 10):
+            data.append(method_selector(i, j))
+            print(f"{i, j}:/50000,1000")
+        total.append(data)
 
-get_final_intersection_points()
+    Y, X = np.meshgrid(range(1, 1002, 10), range(1, 50002, 500))
+
+    cmap = mpl.cm.Set1
+    norm = mpl.colors.BoundaryNorm([-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5], cmap.N)
+    ax = plt.pcolormesh(Y, X, total, cmap=cmap, clim=(0, 6))
+
+    cbar = plt.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), ticks=[0, 1, 2, 3, 4, 5])
+    cbar.set_ticklabels(methods)
+    plt.title("Interpolation of method selector")
+    plt.ylabel("number of keyframes")
+    plt.xlabel("number of queries")
+    plt.xlim([0, 1000])
+    plt.ylim([0, 1000])
+    plt.savefig(r".\test_data\plots\method_selector.png")
+    plt.show()
