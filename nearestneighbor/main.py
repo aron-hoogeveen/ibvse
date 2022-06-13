@@ -69,7 +69,7 @@ def method_selector(n_frames_inter, n_queries_inter):
     n_frames_inter = max(271, min(n_frames_inter, 50000))
     n_queries_inter = min(n_queries_inter, 1000)
 
-    method_idx = np.load(r".\test_data\interp_data.npy", allow_pickle=True)
+    method_idx = np.load(r"nearestneighbor/test_data/interp_data.npy", allow_pickle=True)
     queries = np.array([np.arange(270,4050, 270)])
     queries = np.append(queries, np.array([np.arange(4050,50000,4050)]))
     queries = np.append(queries, 50000)
