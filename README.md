@@ -9,7 +9,7 @@ conda env create
 ```
 The system can be ran by calling the file main.py in terminal with the following command
 ```
-python prototype-main.py --input_video <path to video file> --input_image <path to image file>
+usage: prototype-main.py [-h] input_video input_image
 ```
 Where the arguments are the corresponding paths to the video and image files.
 
