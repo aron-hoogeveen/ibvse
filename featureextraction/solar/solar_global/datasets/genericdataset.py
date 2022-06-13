@@ -1,5 +1,7 @@
 import os
 
+from PIL import Image
+import numpy as np
 import torch
 import torch.utils.data as data
 from torchvision import transforms
@@ -49,34 +51,39 @@ class ImagesFromList(data.Dataset):
             image (PIL): Loaded image
         """
         path = self.images_fn[index]
-        img = self.loader(path)
-        imfullsize = max(img.size)
+        # img = self.loader(path)
+        img = Image.open(path)
+        img = img.convert('RGB')
+        img = np.array(img)
+        if img.shape[2] == 4:
+            img = img[..., :3]
+        # imfullsize = max(img.size)
 
-        if self.mode == 'train':
-            if self.imsize is not None:
-                if self.bbxs is not None:
-                    img = imresize(img, self.imsize * max(img.size) / imfullsize)
-                else:
-                    img = imresize(img, self.imsize)
-                    
-            crop_params = transforms.RandomCrop.get_params(img, [self.imsize, self.imsize])
-            img = imcrop(img, crop_params)
+        # if self.mode == 'train':
+        #     if self.imsize is not None:
+        #         if self.bbxs is not None:
+        #             img = imresize(img, self.imsize * max(img.size) / imfullsize)
+        #         else:
+        #             img = imresize(img, self.imsize)
+        #
+        #     crop_params = transforms.RandomCrop.get_params(img, [self.imsize, self.imsize])
+        #     img = imcrop(img, crop_params)
+        #
+        #     if self.transform is not None:
+        #         img = self.transform(img)
 
-            if self.transform is not None:
-                img = self.transform(img)
+        # elif self.mode == 'test':
+            # if self.bbxs is not None:
+            #     img = img.crop(self.bbxs[index])
+            #
+            # if self.imsize is not None:
+            #     if self.bbxs is not None:
+            #         img = imthumbnail(img, self.imsize * max(img.size) / imfullsize)
+            #     else:
+            #          img = imthumbnail(img, self.imsize)
 
-        elif self.mode == 'test':
-            if self.bbxs is not None:
-                img = img.crop(self.bbxs[index])
-
-            if self.imsize is not None:
-                if self.bbxs is not None:
-                    img = imthumbnail(img, self.imsize * max(img.size) / imfullsize)
-                else:
-                     img = imthumbnail(img, self.imsize)
-
-            if self.transform is not None:
-                img = self.transform(img)
+        if self.transform is not None:
+            img = self.transform(img)
 
         return img
 

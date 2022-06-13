@@ -24,7 +24,10 @@ def main():
     #
     # store_hpo_hnsw_data(r'.\test_data\hpo_results\faiss_hnsw270.pkl')
     # get_final_intersection_points()
-    plot_methods_total_time_final()
+    # plot_methods_total_time_final()
+    break_points_15min()
+    # something()
+    # validation_random()
 
 def plot_data_timevsk_diff_frames():
     filename270 = r'test_data/timevsk270.csv'
@@ -39,7 +42,7 @@ def plot_data_timevsk_diff_frames():
     df_methods50000 = []
 
     methods = ['linear', 'faiss_flat_cpu', 'faiss_flat_gpu', 'faiss_hnsw', 'faiss_ivf_cpu', 'faiss_pq', 'faiss_lsh']
-    linestyles = ['black', 'red', 'green', 'blue', 'cyan', 'magenta', 'darkorange']
+    linestyles = ['black -', 'magenta -', 'cyan -', 'black --','red --', 'blue --', 'magenta --' ]
 
     for method in methods:
         df_methods270.append(df270.query(f'method == "{method}"'))
@@ -57,17 +60,19 @@ def plot_data_timevsk_diff_frames():
 
 
     for linestyle, df_method270, df_method8100, df_method50000 in zip(linestyles, df_methods270, df_methods8100, df_methods50000):
-        axes1[0].plot(k_percentage, df_method270['searchtime'],color = linestyle)
-        axes1[1].plot(k_percentage, df_method270['mAP'],color = linestyle)
-        axes1[2].plot(k_percentage, df_method270['recall'],color = linestyle)
+        color, style = linestyle.split()
+        print(color,style)
+        axes1[0].plot(k_percentage, df_method270['searchtime'],style, color = color)
+        axes1[1].plot(k_percentage, df_method270['mAP'],style,color = color)
+        axes1[2].plot(k_percentage, df_method270['recall'],style,color = color)
 
-        axes2[0].plot(k_percentage, df_method8100['searchtime'],color = linestyle)
-        axes2[1].plot(k_percentage, df_method8100['mAP'],color = linestyle)
-        axes2[2].plot(k_percentage, df_method8100['recall'])
+        axes2[0].plot(k_percentage, df_method8100['searchtime'],style,color = color)
+        axes2[1].plot(k_percentage, df_method8100['mAP'],style,color = color)
+        axes2[2].plot(k_percentage, df_method8100['recall'],style,color = color)
 
-        axes3[0].plot(k_percentage, df_method50000['searchtime'],color = linestyle)
-        axes3[1].plot(k_percentage, df_method50000['mAP'],color = linestyle)
-        axes3[2].plot(k_percentage, df_method50000['recall'],color = linestyle)
+        axes3[0].plot(k_percentage, df_method50000['searchtime'],style,color = color)
+        axes3[1].plot(k_percentage, df_method50000['mAP'],style,color = color)
+        axes3[2].plot(k_percentage, df_method50000['recall'],style,color = color)
 
     axes1_new = [axes1[0], axes2[0], axes3[0]]
     axes2_new = [axes1[1], axes2[1], axes3[1]]
@@ -97,9 +102,11 @@ def plot_data_timevsk_diff_frames():
         ax3.axhline(y=0.50, color = 'black', linestyle = '--', linewidth = 0.75)
         ax3.grid(True)
 
-    fig1.legend(methods, loc="center right", title="Method", borderaxespad=0.1)
-    fig2.legend(methods, loc="center right", title="Method", borderaxespad=0.1)
-    fig3.legend(methods, loc="center right", title="Method", borderaxespad=0.1)
+    methods_legend = ['L2','FAISS flat L2 CPU', 'FAISS flat L2 GPU',
+               'FAISS HNSW', 'FAISS IVF CPU', 'FAISS PQ', "FAISS LSH"]
+    fig1.legend(methods_legend, loc="center right", title="Method", borderaxespad=0.1)
+    fig2.legend(methods_legend, loc="center right", title="Method", borderaxespad=0.1)
+    fig3.legend(methods_legend, loc="center right", title="Method", borderaxespad=0.1)
 
 
     fig1.savefig("test_data/plots/timevskfinal270.png")
@@ -292,19 +299,19 @@ def plot_methods_total_time():
                 f"{methods[9]}", f"{methods[10]}"], loc="center right", title="Method", borderaxespad=0.1)
     plt.subplots_adjust(right=0.75, hspace=0.8)
 
-    ax1.title.set_text("270 frames")
+    ax1.title.set_text("(a) 270 keyframes")
     ax1.set_ylim([0, 60])
     ax1.set_xlim([0, max_queries])
     ax1.set(xlabel="number of queries ", ylabel="Time (ms)")
     ax1.grid(True)
 
-    ax2.title.set_text("8100 frames")
+    ax2.title.set_text("(b) 8100 keyframes")
     ax2.set_ylim([0, 1000])
     ax2.set_xlim([0, max_queries])
     ax2.set(xlabel="number of queries ", ylabel="Time (ms)")
     ax2.grid(True)
 
-    ax3.title.set_text("50000 frames")
+    ax3.title.set_text("(c) 50000 keyframes")
     ax3.set_ylim([0, 1250])
     ax3.set_xlim([0, max_queries])
     ax3.set(xlabel="number of queries ", ylabel="Time (ms)")
@@ -379,19 +386,19 @@ def plot_methods_total_time_final():
                 f"{methods[3]}", f"{methods[4]}", f"{methods[5]}"], loc="center right", title="Method", borderaxespad=0.1)
     plt.subplots_adjust(right=0.75, hspace=0.8)
 
-    ax1.title.set_text("270 frames")
+    ax1.title.set_text("(a) 270 keyframes")
     ax1.set_ylim([0, 30])
     ax1.set_xlim([0, max_queries])
     ax1.set(xlabel="number of queries ", ylabel="Time (ms)")
     ax1.grid(True)
 
-    ax2.title.set_text("8100 frames")
+    ax2.title.set_text("(b) 8100 keyframes")
     ax2.set_ylim([0, 500])
     ax2.set_xlim([0, max_queries])
     ax2.set(xlabel="number of queries ", ylabel="Time (ms)")
     ax2.grid(True)
 
-    ax3.title.set_text("50000 frames")
+    ax3.title.set_text("(c) 50000 keyframes")
     ax3.set_ylim([0, 750])
     ax3.set_xlim([0, max_queries])
     ax3.set(xlabel="number of queries ", ylabel="Time (ms)")
@@ -428,7 +435,7 @@ def store_hpo_lsh_data(filepath, number):
     plt.subplots_adjust(right = 0.85)
     plt.xlabel("number of queries")
     plt.ylabel("total time (s)")
-    plt.title(f"paramater optimization for faiss lsh {number}")
+    plt.title(f"Paramater optimization for FAISS LSH at {number} keyframes.")
     plt.savefig(fr".\test_data\plots\{plotfile}")
 
     plt.show()
@@ -543,6 +550,64 @@ def get_final_intersection_points():
         breakpoints = np.array(breakpoints)
         print(f"Methods: {methods[minima_per_frame[breakpoints]]}")
         print(f"Breakpoints:{breakpoints}")
+
+def break_points_15min():
+    df = pd.read_csv(r".\test_data\15minresults.csv")
+    data = np.array([np.arange(270,4050, 270)])
+    data = np.append(data, np.array([np.arange(4050,50000,4050)]))
+    data = np.append(data, 50000)
+    all = []
+    for i in data:
+        print(f"n_frames = {i}/50000")
+        df_selec = df.query(f"n_frames=={i}")
+        print(df_selec)
+        total_time1 = df_selec.iloc[:,2]
+        total_time1000 = df_selec.iloc[:,3]
+        search_time = ((total_time1000-total_time1)/999).to_numpy()
+        build_time = (total_time1 - search_time).to_numpy()
+        print(build_time)
+        print(search_time)
+
+        method_array, breaks = calc_breakpoints(build_time,search_time,1000,4)
+        method_array[0] = method_array[1]
+        all.append(method_array)
+        total_time1.to_numpy()
+        total_time1000.to_numpy()
+        # for i,j in zip(total_time1,total_time1000):
+        #     plt.plot([i,j])
+        # plt.legend(["l","Flat","hnsw","lsh"])
+        # plt.show()
+    all = np.concatenate(all).ravel()
+    for i in range(len(all)):
+        if all[i] > 1:
+            all[i] +=1
+
+    print(all)
+    print(len(all))
+    filename = r".\test_data\interp_data.npy"
+    np.save(filename, np.array(all))
+
+
+# a + x - a - 1000x
+# a + 1000x
+def something():
+    df = pd.read_csv(r".\test_data\15minresults.csv")
+    selection = df[df.iloc[:,4] <= 0.65]
+    selection2 = df[df.iloc[:,5] < 0.5]
+    print(selection)
+    print(selection2)
+
+def validation_random():
+    df = pd.read_csv(r".\test_data\15minresults6.csv")
+    df.info()
+    indices = []
+    for i in range(0,len(df),6):
+        selec = df.loc[i:i + 5]
+        n_queries = df.loc[i].iloc[1]
+        minima = selec.iloc[:,3] + selec.iloc[:,4]*n_queries
+        indices.append(minima.idxmin())
+        print(min(minima))
+    print(df.loc[indices])
 
 if __name__ == "__main__":
     main()
