@@ -110,6 +110,16 @@ def nns(frame_features_in, image_features_in, method, k = None, k_percentage = N
     print(f"Search time per query:\t{time_per_query}")
     print(f"&{np.round((build_time+(time_per_query*args.n_queries))*1000,2)}\t&{np.round(build_time*1000,2)}\t&{np.round(time_per_query*1000,2)}\t&{np.round(mAP,2)}\t&{np.round(recall,2)}")
 
+    filename = r".\test_data\15minresults.csv"
+    build_time_ms = build_time*1000
+    time_per_query_ms = time_per_query*1000
+
+    if not os.path.exists(filename):
+        with open(filename, 'w') as f:
+            f.write(f"n_frames, method, total_time1, total_time1000, mAP, recall\n")
+
+    with open(filename, 'a') as f:
+        f.write(f"{n_frames},{method},{build_time_ms+time_per_query_ms},{build_time_ms+time_per_query_ms*1000},{mAP},{recall}\n")
 
     return build_time, time_per_query, total_time, mAP, recall
 
@@ -159,7 +169,7 @@ def cal_precision(idx, labels_train, labels_test):
 
 def main():
     frame_features = np.load((os.path.abspath(r'data/frames.npy')))
-    frame_labels = np.load((os.path.abspath(r'data/frames_labels.npy')))
+    frame_labels = np.load((os.path.abspath(r'data/frame_labels.npy')))
     image_features = np.load((os.path.abspath(r'data/images.npy')))
     image_labels = np.load((os.path.abspath(r'data/images_labels.npy')))
     # Create smaller dataset with equal distribution
