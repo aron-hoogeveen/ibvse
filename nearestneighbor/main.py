@@ -1,12 +1,8 @@
 import sys
 import os
 import numpy as np
-from scipy.interpolate import LinearNDInterpolator, NearestNDInterpolator
-sys.path.append(os.path.dirname(os.path.abspath('nearestneighbor/main.py')))
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-import time
-from nn_main_test import cal_mAP, cal_recall
+from scipy.interpolate import NearestNDInterpolator
+sys.path.append(os.path.dirname(os.path.abspath('nearestneighbor\main.py')))
 
 import nn_linear
 import nn_faiss
@@ -14,32 +10,25 @@ import nn_faiss
 
 def nns(frame_features_in, image_features_in):
     """
-    Performs the nearest neighbor search
-    :param frame_features_in: the list of feature vectors from the frames
-    :param image_features_in: the list of feature vectors from the images
-    :param method: nearest neighbor method to be used
-    :param k: the amount of nearest neighbors
-    :param annoy_forest_size: forest size for using annoy
-    :param annoy_metric: distance metric for using annoy
-    :param hnsw_batch_size: batch size for hnsw
-    :return: Resulting time needed
+    Main function for the nearest neighbour search. Selects a method based on the inputs and performs the search
+    :param frame_features_in: The n-dimensional feature vector of the keyframes
+    :param image_features_in: The n-dimensional feature vector of the query images
+    :return: The 7% nearest neighbour frames from the list of frame features
     """
     # allocate values
     k_percentage = 7
     min_k = 1
+    min_n_frames = 40
 
     # set values
     n_frames, _ = frame_features_in.shape
     n_queries, _ = image_features_in.shape
-
-    k = max(min_k, round(k_percentage/100 * n_frames))
-
-    if n_frames < 40:
+    k = max(min_k, round(k_percentage/100 * n_frames))  # convert percentage to number with a minimum of 1
+    if n_frames < min_n_frames:  # omit the k_percentage if below the threshold
         k = n_frames
 
+    # select method and call the corresponding function
     method = method_selector(n_frames, n_queries)
-
-
     if method.lower() == 'linear':
         nns_res, dist, _ = nn_linear.matching_L2(k, frame_features_in, image_features_in)
 
@@ -64,12 +53,23 @@ def nns(frame_features_in, image_features_in):
     return nns_res, dist, method
 
 
-def method_selector(n_frames_inter, n_queries_inter):
-    methods = ["linear", "faiss_flat_cpu", "faiss_flat_gpu", "faiss_hnsw", "faiss_lsh","faiss_ivf"]
+def method_selector(n_frames_inter, n_queries_inter, use_indices = False):
+    """
+    Selects the method to be used for the NNS
+    :param n_frames_inter: The number of keyframes
+    :param n_queries_inter: The number of queries
+    :param use_indices: Indicates if indices or string should be returned
+    :return: The most optimal method that can be used for the search
+    """
+
+    # clip the data to fit in the bounds of the selector
     n_frames_inter = max(271, min(n_frames_inter, 50000))
     n_queries_inter = min(n_queries_inter, 1000)
 
-    method_idx = np.load(r"nearestneighbor/test_data/interp_data.npy", allow_pickle=True)
+    # load the selector data
+    method_idx = np.load(os.path.abspath(r".\test_data\interp_data.npy"), allow_pickle=True)
+
+    # create the x and y coordinates for the interpolation (different amounts of keyframes and query images)
     queries = np.array([np.arange(270,4050, 270)])
     queries = np.append(queries, np.array([np.arange(4050,50000,4050)]))
     queries = np.append(queries, 50000)
@@ -82,66 +82,32 @@ def method_selector(n_frames_inter, n_queries_inter):
                          [queries[25]]*1000,[queries[26]]*1000]).flatten()
     n_queries = np.array([range(1, 1001)]*27).flatten()
 
-
-    print(len(n_queries))
-    print(len(n_frames))
-    print(len(method_idx))
-
+    # Build the interpolation function and get the method for the given number of keyframes and query images
     interpolfunc_method = NearestNDInterpolator((n_queries, n_frames), method_idx)
     pts = np.array([n_queries_inter, n_frames_inter])
-    interp_res = round(interpolfunc_method(pts)[0])
+    interp_res = interpolfunc_method(pts)[0]
+    print(interp_res)
+    assert interp_res != -1  # Check if no bad results was given
 
-    assert interp_res != -1
+    # convert index to a method name
+    methods = ["linear", "faiss_flat_cpu", "faiss_flat_gpu", "faiss_hnsw", "faiss_lsh","faiss_ivf"]
+    return interp_res if use_indices else methods[interp_res]
 
-    return methods[interp_res]
 
-
-# if __name__ == "__main__":
-#     methods = ["linear", "faiss_flat_cpu", "faiss_flat_gpu", "faiss_hnsw", "faiss_lsh", "faiss_ivf"]
-#     datax = []
-#     datay_sub = []
-#     datay = []
-#     data = []
-#     Z = []
-#     total = []
-#     for i in range(1,50001,50):
-#         data = []
-#         for j in range(1,1002, 10):
-#             data.append(method_selector(i,j))
-#             print(f"{i,j}:/50000,1000")
-#         total.append(data)
+# WHAT TO DO WITH THESE?
+# frames = np.load(r".\data\frames.npy")
+# images = np.load(r".\data\images.npy")
+# frame_labels = np.load(r".\data\frames_labels.npy")
+# labels = np.load(r".\data\images_labels.npy")
 #
+# t1 = time.time()
+# nns_res, dist, method = nns(frames,images)
+# print(f"Time: {time.time()-t1}")
+# print(cal_mAP(nns_res, frame_labels, labels))
+# print(cal_recall(nns_res, frame_labels, labels))
 #
-#     Y, X = np.meshgrid(range(1,1002, 10),range(1,50002,500))
-#
-#     cmap = mpl.cm.viridis
-#     norm = mpl.colors.BoundaryNorm([-0.5,0.5,1.5,2.5,3.5,4.5,5.5], cmap.N)
-#     ax = plt.pcolormesh(Y, X, total, cmap = cmap, clim = (0,6))
-#
-#     cbar = plt.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), ticks = [0,1,2,3,4,5])
-#     cbar.set_ticklabels(methods)
-#     plt.title("Interpolation of method selector")
-#     plt.ylabel("number of keyframes")
-#     plt.xlabel("number of queries")
-#     plt.xlim([0,1000])
-#     plt.ylim([0,50000])
-#     plt.savefig(r".\test_data\plots\method_selector.png")
-#     plt.show()
-
-#
-#
-    # frames = np.load(r".\data\embedded_features.npy")
-    # images = np.load(r".\data\embedded_features_test.npy")
-    # frame_labels = np.load(r".\data\labels.npy")
-    # labels = np.load(r".\data\labels_test.npy")
-    # t1 = time.time()
-    # nns_res, dist, method = nns(frames,images)
-    # print(f"Time: {time.time()-t1}")
-    # print(cal_mAP(nns_res, frame_labels, labels))
-    # print(cal_recall(nns_res, frame_labels, labels))
-    #
-    # print(f"Method:{method}")
-    # print(f"result: {frame_labels[nns_res]}")
-    # print(f"distances: {dist}")
-    # print(labels)
-    # print(len(nns_res[0]))
+# print(f"Method:{method}")
+# print(f"result: {frame_labels[nns_res]}")
+# print(f"distances: {dist}")
+# print(labels)
+# print(len(nns_res[0]))

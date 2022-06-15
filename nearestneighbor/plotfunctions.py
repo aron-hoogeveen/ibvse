@@ -1,9 +1,12 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import os
 import numpy as np
 import time
 import joblib
+
+from main import method_selector
 
 #methods = ['linear', 'faiss_flat_cpu', 'faiss_flat_gpu', 'faiss_hnsw', 'faiss_ivf_cpu', 'faiss_pq', 'faiss_lsh']
 #linestyles = ['black','red','green','blue','cyan','magenta','darkorange']
@@ -25,9 +28,10 @@ def main():
     # store_hpo_hnsw_data(r'.\test_data\hpo_results\faiss_hnsw270.pkl')
     # get_final_intersection_points()
     # plot_methods_total_time_final()
-    break_points_15min()
+    # break_points_15min()
     # something()
     # validation_random()
+    plot_selector()
 
 def plot_data_timevsk_diff_frames():
     filename270 = r'test_data/timevsk270.csv'
@@ -608,6 +612,34 @@ def validation_random():
         indices.append(minima.idxmin())
         print(min(minima))
     print(df.loc[indices])
+
+def plot_selector():
+    methods = ["linear", "faiss_flat_cpu", "faiss_flat_gpu", "faiss_hnsw", "faiss_lsh", "faiss_ivf"]
+    steps = 10
+    total = []
+    for i in range(1, 50002, int(50000/steps)):
+        data = []
+        for j in range(1, 1002, int(1000/steps)):
+            data.append(method_selector(i, j, use_indices=True))
+            print(f"{i, j}:/50000,1000")
+        total.append(data)
+
+    X, Y = np.meshgrid(range(1, 1002, int(1000/steps)), range(1, 50002, int(50000/steps)))
+
+    cmap = mpl.cm.Set1
+    norm = mpl.colors.BoundaryNorm([-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5], cmap.N)
+
+    plt.pcolormesh(X, Y, total, cmap=cmap, clim=(0, 6))
+
+    cbar = plt.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), ticks=[0, 1, 2, 3, 4, 5])
+    cbar.set_ticklabels(methods)
+    plt.title("Interpolation of method selector")
+    plt.ylabel("number of keyframes")
+    plt.xlabel("number of queries")
+    plt.xlim([0, 1000])
+    plt.ylim([0, 50000])
+    plt.savefig(os.path.abspath(r".\test_data\method_selector.png"))
+    plt.show()
 
 if __name__ == "__main__":
     main()
