@@ -56,7 +56,6 @@ def faiss_lsh(image_features, frame_features, k , bitlength_percentage = 0.25): 
     t1 = time.time()
 
     bitlength_percentage = interpol_lsh(n_frames)
-    print(bitlength_percentage)
 
     index = faiss.IndexLSH(dim, int(bitlength_percentage*dim))
     index.metric_type = faiss.METRIC_L2

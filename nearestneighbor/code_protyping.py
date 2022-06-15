@@ -71,10 +71,10 @@ import os
 
 if __name__ == "__main__":
     np.random.seed(1234)
-    frame_features = np.load((os.path.abspath(r'data/frames.npy')))
-    frame_labels = np.load((os.path.abspath(r'data/frame_labels.npy')))
-    image_features = np.load((os.path.abspath(r'data/images.npy')))
-    image_labels = np.load((os.path.abspath(r'data/images_labels.npy')))
+    frame_features = np.load((os.path.abspath(r'data\frames.npy')))
+    frame_labels = np.load((os.path.abspath(r'data\frames_labels.npy')))
+    image_features = np.load((os.path.abspath(r'data\images.npy')))
+    image_labels = np.load((os.path.abspath(r'data\images_labels.npy')))
 
 
     tries = 10
@@ -111,7 +111,7 @@ if __name__ == "__main__":
             frame_labels_sub = frame_labels[new_dataset_indices_flatten]
 
         for method in methods:
-            data = np.zeros(4,tries)
+            data = np.zeros((4,tries))
             for i in range(tries):
                 build_time, time_per_query, _, mAP, recall = nns(frame_features_sub, image_features_sub,
                                                                           method, k_percentage=7,
@@ -119,11 +119,13 @@ if __name__ == "__main__":
                                                                           image_labels=image_labels_sub)
                 build_time_ms = build_time * 1000
                 time_per_query_ms = time_per_query * 1000
-                data[1,i] = build_time_ms
-                data[2,i] = time_per_query
-                data[3,i] = mAP
-                data[4,i] = recall
+                data[0,i] = build_time_ms
+                data[1,i] = time_per_query
+                data[2,i] = mAP
+                data[3,i] = recall
             data = data.mean(axis = 1)
 
             with open(filename, 'a') as f:
-                f.write(f"{n_frame},{method},{data[1]},{data[2]},{data[3]},{data[4]}\n")
+                f.write(f"{n_frame},{method},{data[0]},{data[1]},{data[2]},{data[3]}\n")
+            print(f"=> n_frames: {np.where(n_frames == n_frame)[0][0]} of {len(n_frames)-1}\n"
+                  f"   method:   {methods.index(method)} of {len(methods)-1} ({method})")

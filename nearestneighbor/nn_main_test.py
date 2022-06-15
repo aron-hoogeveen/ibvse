@@ -103,12 +103,12 @@ def nns(frame_features_in, image_features_in, method, k = None, k_percentage = N
     if (frame_labels is not None) and (image_labels is not None):
         mAP = cal_mAP(nns_res, frame_labels, image_labels)
         recall = cal_recall(nns_res, frame_labels, image_labels)
-        print(f"maP:\t\t\t\t{mAP}")
-        print(f"Recall:\t\t\t{recall}")
-
-    print(f"Build time:\t\t\t{build_time}")
-    print(f"Search time per query:\t{time_per_query}")
-    print(f"&{np.round((build_time+(time_per_query*args.n_queries))*1000,2)}\t&{np.round(build_time*1000,2)}\t&{np.round(time_per_query*1000,2)}\t&{np.round(mAP,2)}\t&{np.round(recall,2)}")
+    #     print(f"maP:\t\t\t\t{mAP}")
+    #     print(f"Recall:\t\t\t{recall}")
+    #
+    # print(f"Build time:\t\t\t{build_time}")
+    # print(f"Search time per query:\t{time_per_query}")
+    # print(f"&{np.round((build_time+(time_per_query*args.n_queries))*1000,2)}\t&{np.round(build_time*1000,2)}\t&{np.round(time_per_query*1000,2)}\t&{np.round(mAP,2)}\t&{np.round(recall,2)}")
 
     return build_time, time_per_query, total_time, mAP, recall
 
