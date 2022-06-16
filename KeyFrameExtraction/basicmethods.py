@@ -5,6 +5,14 @@ import cv2
 
 
 def histogram_summary(hists, shot_start_number):
+    """
+    Generates array of keyframe indices using descriptors
+    :param hists: histogram vectors of frames
+    :param shot_start_number: start index of shot
+    :return indices
+    """
+
+    # intersection threshold
     threshold = 0.3
 
     current_keyframe_hist = hists[0]
@@ -29,21 +37,26 @@ def histogram_summary(hists, shot_start_number):
     #     sumsel = histogram_summary(path, threshold + 0.09, frame_count)
     # print("compression: "+ str(1-summary))
     # print("--- %s seconds ---" % (time.time() - start_time))
+
+
     return keyframe_indices
 
 
 def first_middle_last(descriptors, shot_start_number):
+    # Generates array of indices using the shot index and number of frames in shot
     print('Selecting first, middle and last frame from shot')
     middle = int((shot_start_number+len(descriptors)/2))
     indices = [shot_start_number, middle, shot_start_number+len(descriptors)]
     return indices
 
 def first_last(descriptors, shot_start_number):
+    # Generates array of indices using the shot index and number of frames in shot
     print('Selecting first and last frame from shot')
     indices = [shot_start_number, shot_start_number+len(descriptors)]
     return indices
 
 def first_only(descriptors, shot_start_number):
+    # Generates array of indices using the shot index
     #print('Selecting first frame from shot')
     indices = [shot_start_number]
     return indices
@@ -53,6 +66,7 @@ def shotdependent_sampling(descriptors, shot_start_number):
     return indices
 
 def changeIdxFormat(indices, frame_count):
+    # Converts the format of keyframe selection from [0, 3, 5 ... ] to [0., 0., 0., 0., 1, 0., 1, ... ]
     print("Converting KF selection [a, b, c, ..., d] to [0, 0, 1, 0 ... 1 ] ")
     #summary_selections = np.random.random((n_frames, 1)) * 100
     #val_percentile = np.percentile(summary_selections, compression)

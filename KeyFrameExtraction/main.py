@@ -3,11 +3,14 @@ import os
 import time
 import numpy as np
 
+<<<<<<< HEAD
 from Gen_SBD import *
 
 def save_keyframes(keyframe_indices, frames_data):
     print("Extracting keyframes")
     savepath = os.path.expanduser("~/bin/keyframes")
+=======
+>>>>>>> f6811e3999a64262b6e0e7b51f0a1ddf282d8436
     try:
         if not os.path.exists(savepath):
             os.makedirs(savepath)
@@ -24,7 +27,7 @@ def keyframe_extraction(video_path, method, performSBD, presample):
     """
     Performs the extraction of keyframes of an input video and returns
     :param video_path: the path to the input video
-    :param method: the method of keyframe extraction after performing shot detection
+    :param method: the method of keyframe extraction after performing shot detection (crudehistogram, firstmiddlelast, firstlast, firstonly, histogramblockclustering, VSUMM, VSUMM_combi, colormoments)
     :param performSBD: boolean, perform shot boundary detection or not
     :param presample: boolean, presample the input video for speed gain (default  = 10 fps)
     :return: Indices of keyframes, corresponding rgb-data and video_fps
@@ -75,6 +78,7 @@ def KE_uniform_sampling(video_path, rate, CR):
     else:
         skip_num = 1/(1-CR)
 
+    # generate indices
     keyframes_idx = [i for i in range(frame_count-1) if int(i % skip_num) == 0]
     print('\033[93m' + f'Time to select indices with uniform sampling: {time.time()-method_time}'+ '\033[0m')
     keyframes_data = keyframes_indices_to_array(keyframes_idx, video_path, video_fps, frame_count)
@@ -156,6 +160,7 @@ def print_statistics(frame_count, video_fps, keyframes_idx):
 
 
 if __name__ == '__main__':
+<<<<<<< HEAD
     print("Path:")
     print(sys.argv[1])
     kfe_time  = time.time()
@@ -164,6 +169,8 @@ if __name__ == '__main__':
     KE_method = "VSUMM_combi"
     performSBD = True
     presample = False
+=======
+>>>>>>> f6811e3999a64262b6e0e7b51f0a1ddf282d8436
     keyframes_data, keyframe_indices, video_fps = keyframe_extraction(sys.argv[1], KE_method, performSBD, presample)
     #keyframes_data, keyframe_indices, video_fps = KE_uniform_sampling(sys.argv[1], 0.5, 0.85)
     #keyframes_data, keyframe_indices, video_fps = fast_uniform_sampling(sys.argv[1], 5, 0.85)

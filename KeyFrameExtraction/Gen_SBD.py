@@ -1,4 +1,4 @@
-import cv2
+
 import numpy as np
 import os
 import sys
@@ -9,6 +9,7 @@ from basicmethods import *
 from histogramblockclustering import *
 from VSUMM_KE import *
 from VSUMM_combi import *
+from descriptors import *
 from SIFT_KE import *
 import matplotlib.pyplot as plt
 
@@ -103,64 +104,13 @@ class shotDetector(object):
         return idx_new, self.method_descriptors
 
 
-def createDescriptor(method, frame):
 
-    if method == "crudehistogram":
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        hist = cv2.calcHist([frame], [0, 1, 2], None, [8, 8, 8], [0, 256, 0, 256, 0, 256])
-        hist = cv2.normalize(hist, None).flatten()
-        descriptor = hist
-    if method == "histogramblockclustering":
-        frame_rgb = frame
-
-        # dividing a frame into 3*3 i.e 9 blocks
-        height, width, channels = frame_rgb.shape
-
-        if height % 3 == 0:
-            h_chunk = int(height / 3)
-        else:
-            h_chunk = int(height / 3) + 1
-        if width % 3 == 0:
-            w_chunk = int(width / 3)
-        else:
-            w_chunk = int(width / 3) + 1
-        h = 0
-        w = 0
-        feature_vector = []
-        for a in range(1, 4):
-            h_window = h_chunk * a
-            for b in range(1, 4):
-                frame = frame_rgb[h: h_window, w: w_chunk * b, :]
-                hist = cv2.calcHist(frame, [0, 1, 2], None, [6, 6, 6],
-                                    [0, 256, 0, 256, 0, 256])  # finding histograms for each block
-                hist1 = hist.flatten()  # flatten the hist to one-dimensinal vector
-                feature_vector += list(hist1)
-                w = w_chunk * b
-
-            h = h_chunk * a
-            w = 0
-
-        descriptor = feature_vector # M = 1944 one dimensional feature vector for frame
-
-    elif method == "VSUMM" or method == "VSUMM_combi":
-        channels=['b','g','r']
-        num_bins = 16
-        feature_value=[cv2.calcHist([frame],[i],None,[num_bins],[0,256]) for i,col in enumerate(channels)]
-        descriptor = np.asarray(feature_value).flatten()
-
-    elif method == "firstmiddlelast" or method == "firstonly" or method == "firstlast" or method == "uniformsampling" or method == "shotdependentsampling":
-        descriptor = 1
-
-    elif method == "colormoments":
-        grayImage = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        descriptor= cv2.calcHist([grayImage], [0], None, [256], [0, 256])
-
-
-
-    return descriptor
 
 def KFE(presample, skip_num, method, method_descriptors, shot_frame_number,totalpixels):
-
+    """
+    Applies chosen method to frames in shot using descriptors that were generated
+    :return indices of keyframes
+    """
     if method == "crudehistogram":
         keyframe_indices = histogram_summary(method_descriptors, shot_frame_number)
     elif method == "firstmiddlelast":
@@ -180,13 +130,25 @@ def KFE(presample, skip_num, method, method_descriptors, shot_frame_number,total
     elif method == "colormoments":
         keyframe_indices = colormoments(method_descriptors, shot_frame_number, totalpixels)
 
-
+    # multiply every index with skip_num if pre-sampling was performed to get correct indices
     if presample:
         keyframe_indices = [round(element * skip_num) for element in keyframe_indices]
+
     return keyframe_indices
 
 
 def SBD(cap, method, performSBD, presample, video_fps):
+    """
+    Performs shot based detection and calls keyframe extraction method to return indices
+    :param cap: the capture of input video
+    :param method: the method of keyframe extraction after performing shot detection (crudehistogram, firstmiddlelast, firstlast, firstonly, histogramblockclustering, VSUMM, VSUMM_combi, colormoments)
+    :param performSBD: boolean, perform shot boundary detection or not
+    :param presample: boolean, presample the input video for speed gain (default  = 10 fps)
+    :param video_fps: the framerate of input video
+    :return: indices of keyframes
+    """
+
+    # set timer
     time_SBD = time.time()
 
     sampling_rate = 10 # presampling to decrease computation time for reading frames
@@ -195,13 +157,15 @@ def SBD(cap, method, performSBD, presample, video_fps):
     if not performSBD:
         print("No SBD performed! Viewing video as one entire shot/segment")
         frame_count = 0
+
+        # Empty array to put feature descriptors in for chosen method
         method_descriptors = []
 
         width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
         height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
         totalpixels = width*height
 
-        if presample:
+        if presample:   #grab every n-thm frame
             count = 0
             while True:
                 success = cap.grab()
@@ -209,7 +173,7 @@ def SBD(cap, method, performSBD, presample, video_fps):
                     break
                 if int(count % skip_num) == 0:
                     ret, frame = cap.retrieve()
-                    method_descriptors.append(createDescriptor(method, frame))
+                    method_descriptors.append(createDescriptor(method, frame))  #add descriptor for current frame
                     frame_count += 1
                 count += 1
         else:
@@ -217,14 +181,12 @@ def SBD(cap, method, performSBD, presample, video_fps):
                 success, frame = cap.read()
                 if not success:
                     break
-                method_descriptors.append(createDescriptor(method, frame))
+                method_descriptors.append(createDescriptor(method, frame))  #add descriptor for current frame
                 frame_count += 1
 
 
-        shot_boundary = []
-        shot_boundary.append(0)
-        shot_boundary.append(frame_count)
-        print(shot_boundary)
+        shot_boundary = [0, frame_count]
+        print("Shot boundaries: " + str(shot_boundary))
         print('\033[94m' + f'Time to read (presampled) video and  generate descriptors for chosen method: {time.time() - time_SBD}' + '\033[0m')
 
     else: #  perform SBD
