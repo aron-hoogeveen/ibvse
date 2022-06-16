@@ -4,12 +4,18 @@ import time
 
 from Gen_SBD import *
 
+<<<<<<< Updated upstream
 from Gen_SBD import *
 
 def save_keyframes(keyframe_indices, frames_data):
     print("Extracting keyframes")
     savepath = os.path.expanduser("~/bin/keyframes")
 
+=======
+
+from Gen_SBD import *
+
+>>>>>>> Stashed changes
 def save_keyframes(keyframe_indices, frames_data, savepath = "keyframes"):
     """
     saves (key)frames into folder
@@ -201,6 +207,7 @@ def print_statistics(frame_count, video_fps, keyframes_idx):
 
 
 if __name__ == '__main__':
+<<<<<<< Updated upstream
 
     print("Path:")
     print(sys.argv[1])
@@ -212,6 +219,12 @@ if __name__ == '__main__':
     presample = False
 
 
+=======
+    KE_method = "histogramblockclustering"
+    performSBD = False
+    presample = True
+    kfe_time = time.time()
+>>>>>>> Stashed changes
     keyframes_data, keyframe_indices, video_fps = keyframe_extraction(sys.argv[1], KE_method, performSBD, presample)
     #keyframes_data, keyframe_indices, video_fps = KE_uniform_sampling(sys.argv[1], 9, 0.85)
     print('\033[92m' + f' Total KeyframeExtraction time: {time.time() - kfe_time}' + '\033[0m')
