@@ -3,7 +3,7 @@ import os
 import time
 import numpy as np
 
-from Gen_SBD_test import *
+from Gen_SBD import *
 
 def save_keyframes(keyframe_indices, frames_data):
     print("Extracting keyframes")
@@ -161,7 +161,7 @@ if __name__ == '__main__':
     kfe_time  = time.time()
     # methods: crudehistogram, firstmiddlelast, firstlast, firstonly, histogramblockclustering, shotdependentsampling
     #           VSUMM, VSUMM_combi, colormoments
-    KE_method = "firstonly"
+    KE_method = "VSUMM_combi"
     performSBD = True
     presample = False
     keyframes_data, keyframe_indices, video_fps = keyframe_extraction(sys.argv[1], KE_method, performSBD, presample)
