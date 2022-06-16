@@ -11,8 +11,8 @@ import nn_faiss
 def nns(frame_features_in, image_features_in):
     """
     Main function for the nearest neighbour search. Selects a method based on the inputs and performs the search
-    :param frame_features_in: The n-dimensional feature vector of the keyframes
-    :param image_features_in: The n-dimensional feature vector of the query images
+    :param frame_features_in: The n-dimensional feature vectors of the keyframes
+    :param image_features_in: The n-dimensional feature vectors of the query images
     :return: The 7% nearest neighbour frames from the list of frame features
     """
     # allocate values
@@ -93,6 +93,7 @@ def method_selector(n_frames_inter, n_queries_inter, use_indices = False):
     methods = ["linear", "faiss_flat_cpu", "faiss_flat_gpu", "faiss_hnsw", "faiss_lsh","faiss_ivf"]
     return interp_res if use_indices else methods[interp_res]
 
+print(method_selector(270,1))
 
 # WHAT TO DO WITH THESE?
 # frames = np.load(r".\data\frames.npy")

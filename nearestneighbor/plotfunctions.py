@@ -28,7 +28,7 @@ def main():
     # store_hpo_hnsw_data(r'.\test_data\hpo_results\faiss_hnsw270.pkl')
     # get_final_intersection_points()
     # plot_methods_total_time_final()
-    # break_points_15min()
+    break_points_15min()
     # something()
     # validation_random()
     plot_selector()
@@ -491,6 +491,9 @@ def calc_breakpoints(build_times, search_times, n_queries, n_entries):
         minimum = np.inf
         min_ind = None
         for j in range(n_entries):
+            if j == 2:
+                continue
+            print(j)
             res = build_times[j] + search_times[j]*i
             if res < minimum:
                 minimum = res
@@ -556,7 +559,7 @@ def get_final_intersection_points():
         print(f"Breakpoints:{breakpoints}")
 
 def break_points_15min():
-    df = pd.read_csv(r".\test_data\15minresults.csv")
+    df = pd.read_csv(r".\test_data\interp_selector_data.csv")
     data = np.array([np.arange(270,4050, 270)])
     data = np.append(data, np.array([np.arange(4050,50000,4050)]))
     data = np.append(data, 50000)
@@ -564,27 +567,25 @@ def break_points_15min():
     for i in data:
         print(f"n_frames = {i}/50000")
         df_selec = df.query(f"n_frames=={i}")
-        print(df_selec)
-        total_time1 = df_selec.iloc[:,2]
-        total_time1000 = df_selec.iloc[:,3]
-        search_time = ((total_time1000-total_time1)/999).to_numpy()
-        build_time = (total_time1 - search_time).to_numpy()
+        search_time = df_selec.iloc[:, 3].to_numpy()
+        build_time = df_selec.iloc[:, 2].to_numpy()
         print(build_time)
         print(search_time)
 
-        method_array, breaks = calc_breakpoints(build_time,search_time,1000,4)
+        method_array, breaks = calc_breakpoints(build_time,search_time,1000,5)
         method_array[0] = method_array[1]
         all.append(method_array)
-        total_time1.to_numpy()
-        total_time1000.to_numpy()
+        # total_time1 = search_time
+        # total_time1000 = search_time*1000
         # for i,j in zip(total_time1,total_time1000):
         #     plt.plot([i,j])
-        # plt.legend(["l","Flat","hnsw","lsh"])
+        # plt.legend(["l","Flat cpu", "flat gpu","hnsw","lsh"])
         # plt.show()
+
     all = np.concatenate(all).ravel()
-    for i in range(len(all)):
-        if all[i] > 1:
-            all[i] +=1
+    # for i in range(len(all)):
+    #     if all[i] > 1:
+    #         all[i] +=1
 
     print(all)
     print(len(all))
@@ -615,7 +616,7 @@ def validation_random():
 
 def plot_selector():
     methods = ["linear", "faiss_flat_cpu", "faiss_flat_gpu", "faiss_hnsw", "faiss_lsh", "faiss_ivf"]
-    steps = 10
+    steps = 100
     total = []
     for i in range(1, 50002, int(50000/steps)):
         data = []
@@ -624,21 +625,22 @@ def plot_selector():
             print(f"{i, j}:/50000,1000")
         total.append(data)
 
+    total = np.array(total).flatten()
     X, Y = np.meshgrid(range(1, 1002, int(1000/steps)), range(1, 50002, int(50000/steps)))
 
     cmap = mpl.cm.Set1
     norm = mpl.colors.BoundaryNorm([-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5], cmap.N)
 
-    plt.pcolormesh(X, Y, total, cmap=cmap, clim=(0, 6))
-
-    cbar = plt.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), ticks=[0, 1, 2, 3, 4, 5])
-    cbar.set_ticklabels(methods)
+    # plt.pcolormesh(X, Y, total, cmap=cmap, clim=(0, 6))
+    plt.scatter(X,Y,total)
+    # cbar = plt.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), ticks=[0, 1, 2, 3, 4, 5])
+    # cbar.set_ticklabels(methods)
     plt.title("Interpolation of method selector")
     plt.ylabel("number of keyframes")
     plt.xlabel("number of queries")
     plt.xlim([0, 1000])
     plt.ylim([0, 50000])
-    plt.savefig(os.path.abspath(r".\test_data\method_selector.png"))
+    plt.savefig(os.path.abspath(r".\test_data\method_selectoraq2q1.png"))
     plt.show()
 
 if __name__ == "__main__":

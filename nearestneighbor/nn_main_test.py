@@ -114,6 +114,13 @@ def nns(frame_features_in, image_features_in, method, k = None, k_percentage = N
 
 
 def cal_mAP(idx, labels_train, labels_test):
+    """
+    Calculate the mean average precision
+    :param idx: The indices of the NN keyframes
+    :param labels_train: The labels of the keyframes
+    :param labels_test: The labels of the query images
+    :return:
+    """
     # Code provided by current reseach group
     num_queries, K = idx.shape
     matched = np.zeros_like(idx, dtype=np.int16)
@@ -158,7 +165,7 @@ def cal_precision(idx, labels_train, labels_test):
 
 def main():
     frame_features = np.load((os.path.abspath(r'data/frames.npy')))
-    frame_labels = np.load((os.path.abspath(r'data/frame_labels.npy')))
+    frame_labels = np.load((os.path.abspath(r'data/frames_labels.npy')))
     image_features = np.load((os.path.abspath(r'data/images.npy')))
     image_labels = np.load((os.path.abspath(r'data/images_labels.npy')))
     # Create smaller dataset with equal distribution

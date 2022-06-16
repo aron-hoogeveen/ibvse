@@ -10,7 +10,7 @@ if __name__ == "__main__":
     image_labels = np.load((os.path.abspath(r'data\images_labels.npy')))
 
     tries = 10
-    methods = ['linear', 'faiss_flat_cpu', 'faiss_flat_gpu', 'faiss_hnsw','faiss_lsh']
+    methods = ['linear', 'faiss_flat_cpu', 'faiss_hnsw','faiss_lsh']
     n_queries = 100
     n_frames = np.array([np.arange(270,4050, 270)])
     n_frames = np.append(n_frames, np.array([np.arange(4050,50000,4050)]))
@@ -52,7 +52,7 @@ if __name__ == "__main__":
                 build_time_ms = build_time * 1000
                 time_per_query_ms = time_per_query * 1000
                 data[0,i] = build_time_ms
-                data[1,i] = time_per_query
+                data[1,i] = time_per_query_ms
                 data[2,i] = mAP
                 data[3,i] = recall
             data = data.mean(axis = 1)
@@ -61,3 +61,5 @@ if __name__ == "__main__":
                 f.write(f"{n_frame},{method},{data[0]},{data[1]},{data[2]},{data[3]}\n")
             print(f"=> n_frames: {np.where(n_frames == n_frame)[0][0]} of {len(n_frames)-1}\n"
                   f"   method:   {methods.index(method)} of {len(methods)-1} ({method})")
+
+
