@@ -27,6 +27,14 @@ def nns(frame_features_in, image_features_in):
     if n_frames < min_n_frames:  # omit the k_percentage if below the threshold
         k = n_frames
 
+    # Normalize the data
+    frame_features_norm = np.linalg.norm(frame_features_in, axis=1)
+    frame_features_norm = np.expand_dims(frame_features_norm, axis=1)
+    image_features_norm = np.linalg.norm(image_features_in, axis=1)
+    image_features_norm = np.expand_dims(image_features_norm, axis=1)
+    frame_features_in = frame_features_in / frame_features_norm
+    image_features_in = image_features_in / image_features_norm
+
     # select method and call the corresponding function
     method = method_selector(n_frames, n_queries)
     if method.lower() == 'linear':

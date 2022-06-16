@@ -14,15 +14,21 @@ def nns(frame_features_in, image_features_in, method, k = None, k_percentage = N
         annoy_metric='euclidean', hnsw_batch_size=0.10,
         ef_const = 100, frame_labels = None, image_labels = None, build=True, hnsw_m = 8):
     """
-    Performs the nearest neighbor search
-    :param frame_features_in: the list of feature vectors from the frames
-    :param image_features_in: the list of feature vectors from the images
-    :param method: nearest neighbor method to be used
-    :param k: the amount of nearest neighbors
-    :param annoy_forest_size: forest size for using annoy
-    :param annoy_metric: distance metric for using annoy
-    :param hnsw_batch_size: batch size for hnsw
-    :return: Resulting time needed
+    Test function for different nns methods and arguments
+    :param frame_features: The n-dimensional feature vectors of the keyframes
+    :param image_features: The n-dimensional feature vectors of the query images
+    :param method: The method to be used
+    :param k: A fixed number of nearest neighbours to be found
+    :param k_percentage: The percentage of nearest neighbours to be found
+    :param annoy_forest_size: Param forest size for ANNOY
+    :param annoy_metric: Distance metric for ANNOY
+    :param hnsw_batch_size: Batch size in percentage for hnsw
+    :param ef_const: Param ef_const for HNSW
+    :param frame_labels: The labels of the feature vectors of the keyframes
+    :param image_labels: The labels of the feature vectors of the query images
+    :param build: Indicates if data needs to be partitioned
+    :param hnsw_m: Param M for HNSW
+    :return: The build_time, time_per_query, total_time, mAP and recall
     """
     build_time = 0
     mAP = None
@@ -34,7 +40,6 @@ def nns(frame_features_in, image_features_in, method, k = None, k_percentage = N
 
     if k_percentage is not None:
         k = max(1, round(k_percentage/100 * n_frames))
-
 
     # normalization
     eftrain_norm = np.linalg.norm(frame_features_in, axis=1)
@@ -57,7 +62,6 @@ def nns(frame_features_in, image_features_in, method, k = None, k_percentage = N
         # Search the network
         nns_res, dist, time_per_query = nn_hnsw.hnsw_search(image_features_in, k, ef = k)
 
-
     elif method.lower() == 'hnsw_batch':  # NNS by using HNSW and building the graph with batches
         init = True
         if build:  # Build the network in batches of given size
@@ -77,6 +81,7 @@ def nns(frame_features_in, image_features_in, method, k = None, k_percentage = N
         # Linear search
         nns_res, dist, time_per_query = nn_linear.matching_L2(k, frame_features_in, image_features_in)
 
+    # Several faiss implementations
     elif method.lower() == 'faiss_flat_cpu':
         nns_res, dist, build_time, time_per_query = nn_faiss.faiss_flat(image_features_in, frame_features_in, k, False)
     elif method.lower() == 'faiss_flat_gpu':
@@ -100,7 +105,7 @@ def nns(frame_features_in, image_features_in, method, k = None, k_percentage = N
         raise Exception("No method available with that name")
 
     total_time = build_time + time_per_query
-    if (frame_labels is not None) and (image_labels is not None):
+    if (frame_labels is not None) and (image_labels is not None):  # If labels are given calculate mAP and recall
         mAP = cal_mAP(nns_res, frame_labels, image_labels)
         recall = cal_recall(nns_res, frame_labels, image_labels)
     #     print(f"maP:\t\t\t\t{mAP}")
@@ -119,9 +124,9 @@ def cal_mAP(idx, labels_train, labels_test):
     :param idx: The indices of the NN keyframes
     :param labels_train: The labels of the keyframes
     :param labels_test: The labels of the query images
-    :return:
+    :return: The mAP
     """
-    # Code provided by current reseach group
+    # Code provided by current research group
     num_queries, K = idx.shape
     matched = np.zeros_like(idx, dtype=np.int16)
     for i in range(num_queries):
@@ -130,13 +135,19 @@ def cal_mAP(idx, labels_train, labels_test):
             if labels_test[i] == labels_train[idx[i, j]]:
                 count += 1
                 matched[i, j] = count
-    # N_truth = np.max(matched, axis=1, keepdims=True)+1e-16
     AP = np.sum(matched/(np.array(range(K))+1)/K, axis=1)
     mAP = AP.mean()
     return mAP
 
 
 def cal_recall(idx, labels_train, labels_test):
+    """
+    Calculate the recall
+    :param idx: The indices of the NN keyframes
+    :param labels_train: The labels of the keyframes
+    :param labels_test: The labels of the query images
+    :return: The mean of the recall of the queries
+    """
     num_queries, K = idx.shape
     recall = []
     for i in range(num_queries):
@@ -151,6 +162,13 @@ def cal_recall(idx, labels_train, labels_test):
 
 
 def cal_precision(idx, labels_train, labels_test):
+    """
+    Calculate the precision
+    :param idx: The indices of the NN keyframes
+    :param labels_train: The labels of the keyframes
+    :param labels_test: The labels of the query images
+    :return: The mean of the precision of the queries
+    """
     num_queries, K = idx.shape
     precision = []
     for i in range(num_queries):
@@ -164,23 +182,31 @@ def cal_precision(idx, labels_train, labels_test):
 
 
 def main():
+    """
+    Main body to test the the different implementations via calling the file in terminal
+    :return:
+    """
+    # Load data
     frame_features = np.load((os.path.abspath(r'data/frames.npy')))
     frame_labels = np.load((os.path.abspath(r'data/frames_labels.npy')))
     image_features = np.load((os.path.abspath(r'data/images.npy')))
     image_labels = np.load((os.path.abspath(r'data/images_labels.npy')))
+
     # Create smaller dataset with equal distribution
-    np.random.seed(1234) # for generating consistent data
     # params to be set dependent on dataset (this case CIFAR-10)
+    np.random.seed(1234) # for generating consistent data
     if args.n_frames < 50000:
         dataset_new_size = args.n_frames
         dataset_n_classes = 10
         new_dataset_indices = []
-        assert dataset_new_size % dataset_n_classes == 0
+        assert dataset_new_size % dataset_n_classes == 0  # Check if data can be equally separated
 
+        # For each class generate a random subset
         for i in range(dataset_n_classes):
             new_dataset_indices.append(
                 np.random.choice(np.where(frame_labels == i)[0], int(dataset_new_size / dataset_n_classes), replace=False))
 
+        # Combine the random data
         new_dataset_indices_flatten = np.array(new_dataset_indices).flatten()
         frame_features = frame_features[new_dataset_indices_flatten]
         frame_labels = frame_labels[new_dataset_indices_flatten]

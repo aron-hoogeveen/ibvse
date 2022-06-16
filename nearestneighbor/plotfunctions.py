@@ -8,8 +8,9 @@ import joblib
 
 from main import method_selector
 
-#methods = ['linear', 'faiss_flat_cpu', 'faiss_flat_gpu', 'faiss_hnsw', 'faiss_ivf_cpu', 'faiss_pq', 'faiss_lsh']
-#linestyles = ['black','red','green','blue','cyan','magenta','darkorange']
+
+# methods = ['linear', 'faiss_flat_cpu', 'faiss_flat_gpu', 'faiss_hnsw', 'faiss_ivf_cpu', 'faiss_pq', 'faiss_lsh']
+# linestyles = ['black','red','green','blue','cyan','magenta','darkorange']
 
 def main():
     # plot_data_timevsk_diff_frames()
@@ -33,6 +34,7 @@ def main():
     # validation_random()
     plot_selector()
 
+
 def plot_data_timevsk_diff_frames():
     filename270 = r'test_data/timevsk270.csv'
     filename8100 = r'test_data/timevsk8100.csv'
@@ -46,7 +48,7 @@ def plot_data_timevsk_diff_frames():
     df_methods50000 = []
 
     methods = ['linear', 'faiss_flat_cpu', 'faiss_flat_gpu', 'faiss_hnsw', 'faiss_ivf_cpu', 'faiss_pq', 'faiss_lsh']
-    linestyles = ['black -', 'magenta -', 'cyan -', 'black --','red --', 'blue --', 'magenta --' ]
+    linestyles = ['black -', 'magenta -', 'cyan -', 'black --', 'red --', 'blue --', 'magenta --']
 
     for method in methods:
         df_methods270.append(df270.query(f'method == "{method}"'))
@@ -56,27 +58,27 @@ def plot_data_timevsk_diff_frames():
     k_percentage = np.linspace(0.1, 25, 50)
 
     fig1, axes1 = plt.subplots(1, 3, figsize=(12, 6))
-    plt.subplots_adjust(right=0.85, wspace = 0.3)
+    plt.subplots_adjust(right=0.85, wspace=0.3)
     fig2, axes2 = plt.subplots(1, 3, figsize=(12, 6))
-    plt.subplots_adjust(right=0.85, wspace = 0.3)
+    plt.subplots_adjust(right=0.85, wspace=0.3)
     fig3, axes3 = plt.subplots(1, 3, figsize=(12, 6))
-    plt.subplots_adjust(right=0.85, wspace = 0.3)
+    plt.subplots_adjust(right=0.85, wspace=0.3)
 
-
-    for linestyle, df_method270, df_method8100, df_method50000 in zip(linestyles, df_methods270, df_methods8100, df_methods50000):
+    for linestyle, df_method270, df_method8100, df_method50000 in zip(linestyles, df_methods270, df_methods8100,
+                                                                      df_methods50000):
         color, style = linestyle.split()
-        print(color,style)
-        axes1[0].plot(k_percentage, df_method270['searchtime'],style, color = color)
-        axes1[1].plot(k_percentage, df_method270['mAP'],style,color = color)
-        axes1[2].plot(k_percentage, df_method270['recall'],style,color = color)
+        print(color, style)
+        axes1[0].plot(k_percentage, df_method270['searchtime'], style, color=color)
+        axes1[1].plot(k_percentage, df_method270['mAP'], style, color=color)
+        axes1[2].plot(k_percentage, df_method270['recall'], style, color=color)
 
-        axes2[0].plot(k_percentage, df_method8100['searchtime'],style,color = color)
-        axes2[1].plot(k_percentage, df_method8100['mAP'],style,color = color)
-        axes2[2].plot(k_percentage, df_method8100['recall'],style,color = color)
+        axes2[0].plot(k_percentage, df_method8100['searchtime'], style, color=color)
+        axes2[1].plot(k_percentage, df_method8100['mAP'], style, color=color)
+        axes2[2].plot(k_percentage, df_method8100['recall'], style, color=color)
 
-        axes3[0].plot(k_percentage, df_method50000['searchtime'],style,color = color)
-        axes3[1].plot(k_percentage, df_method50000['mAP'],style,color = color)
-        axes3[2].plot(k_percentage, df_method50000['recall'],style,color = color)
+        axes3[0].plot(k_percentage, df_method50000['searchtime'], style, color=color)
+        axes3[1].plot(k_percentage, df_method50000['mAP'], style, color=color)
+        axes3[2].plot(k_percentage, df_method50000['recall'], style, color=color)
 
     axes1_new = [axes1[0], axes2[0], axes3[0]]
     axes2_new = [axes1[1], axes2[1], axes3[1]]
@@ -84,7 +86,7 @@ def plot_data_timevsk_diff_frames():
 
     k_percent = 7
 
-    for ax1,ax2,ax3 in zip(axes1_new, axes2_new, axes3_new):
+    for ax1, ax2, ax3 in zip(axes1_new, axes2_new, axes3_new):
         ax1.title.set_text("search time")
         ax1.set(xlabel="K (%)", ylabel="Search time (s)")
         ax1.set_xlim([0, 25])
@@ -95,30 +97,29 @@ def plot_data_timevsk_diff_frames():
         ax2.set_xlim([0, 25])
         ax2.set_ylim([0.2, 0.85])
         ax2.grid(True)
-        ax2.axvline(x=k_percent, color = 'black', linestyle = '--', linewidth = 0.75)
-        ax2.axhline(y=0.65, color = 'black', linestyle = '--', linewidth = 0.75)
+        ax2.axvline(x=k_percent, color='black', linestyle='--', linewidth=0.75)
+        ax2.axhline(y=0.65, color='black', linestyle='--', linewidth=0.75)
 
         ax3.title.set_text("recall")
         ax3.set(xlabel="K (%)", ylabel="recall")
         ax3.set_xlim([0, 25])
         ax3.set_ylim([0, 0.95])
-        ax3.axvline(x=k_percent, color = 'black', linestyle = '--', linewidth = 0.75)
-        ax3.axhline(y=0.50, color = 'black', linestyle = '--', linewidth = 0.75)
+        ax3.axvline(x=k_percent, color='black', linestyle='--', linewidth=0.75)
+        ax3.axhline(y=0.50, color='black', linestyle='--', linewidth=0.75)
         ax3.grid(True)
 
-    methods_legend = ['L2','FAISS flat L2 CPU', 'FAISS flat L2 GPU',
-               'FAISS HNSW', 'FAISS IVF CPU', 'FAISS PQ', "FAISS LSH"]
+    methods_legend = ['L2', 'FAISS flat L2 CPU', 'FAISS flat L2 GPU',
+                      'FAISS HNSW', 'FAISS IVF CPU', 'FAISS PQ', "FAISS LSH"]
     fig1.legend(methods_legend, loc="center right", title="Method", borderaxespad=0.1)
     fig2.legend(methods_legend, loc="center right", title="Method", borderaxespad=0.1)
     fig3.legend(methods_legend, loc="center right", title="Method", borderaxespad=0.1)
-
 
     fig1.savefig("test_data/plots/timevskfinal270.png")
     fig2.savefig("test_data/plots/timevskfinal8100.png")
     fig3.savefig("test_data/plots/timevskfinal50000.png")
 
-
     plt.show()
+
 
 def plot_data_timevsk():
     filename = r'test_data/timevsk.csv'
@@ -324,52 +325,51 @@ def plot_methods_total_time():
     plt.savefig("test_data/plots/total_time_per_method.png")
     plt.show()
 
+
 def plot_methods_total_time_final():
-    methods = ['L2','FAISS flat L2 CPU', 'FAISS flat L2 GPU',
+    methods = ['L2', 'FAISS flat L2 CPU', 'FAISS flat L2 GPU',
                'FAISS HNSW', 'FAISS IVF CPU', "FAISS LSH"]
     max_queries = 1000
     n_queries = [1, max_queries]
 
     # Manually retrieved data for n_frames 270
-    search_times_270 = np.array([0.75,0.16,0.0,0.0, -1, 0.01])
+    search_times_270 = np.array([0.75, 0.16, 0.0, 0.0, -1, 0.01])
     search_times_max_270 = search_times_270 * max_queries
-    build_times_270 = np.array([0, 1.0, 405.0,12.01,-1, 8.01 ])
+    build_times_270 = np.array([0, 1.0, 405.0, 12.01, -1, 8.01])
     total_270 = search_times_270 + build_times_270
     total_max_270 = search_times_max_270 + build_times_270
 
     # Manually retrieved data for n_frames 8100
-    search_times_8100 = np.array([33.65, 0.35,0.02, 0.11,-1, 0.03])
+    search_times_8100 = np.array([33.65, 0.35, 0.02, 0.11, -1, 0.03])
     search_times_max_8100 = search_times_8100 * max_queries
-    build_times_8100 = np.array([0, 9.01, 414.89, 206.19,-1, 39.03])
+    build_times_8100 = np.array([0, 9.01, 414.89, 206.19, -1, 39.03])
     total_8100 = search_times_8100 + build_times_8100
     total_max_8100 = search_times_max_8100 + build_times_8100
 
     # Manually retrieved data for n_frames 50000
-    search_times_50000 = np.array([219.54, 1.31, 0.09, 3.43,-1, 0.2])
+    search_times_50000 = np.array([219.54, 1.31, 0.09, 3.43, -1, 0.2])
     search_times_max_50000 = search_times_50000 * max_queries
-    build_times_50000 = np.array([0, 54.96, 466.42,5045.29,-1, 131.12 ])
+    build_times_50000 = np.array([0, 54.96, 466.42, 5045.29, -1, 131.12])
     total_50000 = search_times_50000 + build_times_50000
     total_max_50000 = search_times_max_50000 + build_times_50000
 
-
-    ivf_n_queries270 = np.array([1,123,1000])
-    ivf_n_queries8100 = np.array([1,5,11,90,259,509,1000])
+    ivf_n_queries270 = np.array([1, 123, 1000])
+    ivf_n_queries8100 = np.array([1, 5, 11, 90, 259, 509, 1000])
     ivf_n_queries50000 = n_queries
 
-    ivf_search_times270 = np.array([0.0,0.01,0.01])
-    ivf_search_times8100 = np.array([2,0.2,0.27,0.17,0.14,0.11,0.11])
-    ivf_search_times50000 = np.array([0.96,0.96])
+    ivf_search_times270 = np.array([0.0, 0.01, 0.01])
+    ivf_search_times8100 = np.array([2, 0.2, 0.27, 0.17, 0.14, 0.11, 0.11])
+    ivf_search_times50000 = np.array([0.96, 0.96])
 
-    ivf_build_time270 = np.array([11.01,12.01,12.01])
-    ivf_build_time8100 = np.array([83.07,84.08,81.18,89.08,90.08,112.35,112.35])
+    ivf_build_time270 = np.array([11.01, 12.01, 12.01])
+    ivf_build_time8100 = np.array([83.07, 84.08, 81.18, 89.08, 90.08, 112.35, 112.35])
     ivf_build_time50000 = np.array([452.41, 452.41])
 
     ivf_total_270 = ivf_build_time270 + (ivf_n_queries270 * ivf_search_times270)
     ivf_total_8100 = ivf_build_time8100 + (ivf_n_queries8100 * ivf_search_times8100)
     ivf_total_50000 = ivf_build_time50000 + (ivf_n_queries50000 * ivf_search_times50000)
 
-
-    styles = ['black -','magenta -', 'cyan -', 'black --', 'red --','magenta --']
+    styles = ['black -', 'magenta -', 'cyan -', 'black --', 'red --', 'magenta --']
     fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(8, 8))
 
     for style, time_270, time_max_270, time_8100, time_max_8100, time_50000, time_max_50000 \
@@ -387,7 +387,8 @@ def plot_methods_total_time_final():
 
     fig.suptitle("Comparison of total time for each method")
     fig.legend([f"{methods[0]}", f"{methods[1]}", f"{methods[2]}",
-                f"{methods[3]}", f"{methods[4]}", f"{methods[5]}"], loc="center right", title="Method", borderaxespad=0.1)
+                f"{methods[3]}", f"{methods[4]}", f"{methods[5]}"], loc="center right", title="Method",
+               borderaxespad=0.1)
     plt.subplots_adjust(right=0.75, hspace=0.8)
 
     ax1.title.set_text("(a) 270 keyframes")
@@ -411,73 +412,111 @@ def plot_methods_total_time_final():
     plt.savefig("test_data/plots/total_time_per_method_final.png")
     plt.show()
 
+
 def store_hpo_lsh_data(filepath, number):
+    """
+    Store the data from the HPO for LSH in a latex table and create plots
+    :param filepath: The file in which the optuna study is stored
+    :param number: The number of frames the HPO was done for
+    :return: A latex file with a table and plots for the HPO
+    """
     n_queries = 1000
-    linestyles = ['-','--','-.']
-    query_range = [1,n_queries]
+    query_range = [1, n_queries]
+
+    # Load the study and create a dataframe
     object = joblib.load(filepath)
     df = object.trials_dataframe(attrs=('number', 'value', 'params', 'state'))
-    latexfile = filepath.split("\\")[-1].split(".")[0]+'.tex'
-    plotfile = 'hpo_' + filepath.split("\\")[-1].split(".")[0]+'.png'
+
+    # Create a latex and png file name
+    latexfile = filepath.split("\\")[-1].split(".")[0] + '.tex'
+    plotfile = 'hpo_' + filepath.split("\\")[-1].split(".")[0] + '.png'
+    # Store the study data as a latex table
     with open(rf'.\test_data\latex\{latexfile}', 'w') as savefile:
-        savefile.write(df.to_latex(position  ='h!', label = 'app:rawFaissLSH' , index = False, caption = f'raw optuna study data for optimizing the bitlength atFAISS LSH at 270 frames'))
+        savefile.write(df.to_latex(position='h!', label='app:rawFaissLSH', index=False,
+                                   caption=f'Filler for caption'))
 
-    selection = df.query("values_0 >= 0.65 & values_1 >= 0.5 & state == 'COMPLETE'").sort_values(by = "params_bitlength_percentage")
+    # Filter the study data based on requirements for mAP and recall
+    selection = df.query("values_0 >= 0.65 & values_1 >= 0.5 & state == 'COMPLETE'").sort_values(
+        by="params_bitlength_percentage")
 
+    # Linear interpolate data from 1 to 1000 queries
     search_times = selection['values_2']
-    search_times1000 = search_times*n_queries
+    search_times1000 = search_times * n_queries
     build_times = selection['values_3']
     total_times = build_times + search_times
     total_times1000 = build_times + search_times1000
 
-    plt.rcParams["figure.figsize"] = (15,8)
-    for index, (time, time1000) in enumerate(zip(total_times,total_times1000)):
-        plt.plot(query_range, [time,time1000], linestyles[index//10])
+    # plot the data
+    plt.rcParams["figure.figsize"] = (15, 8)
+    linestyles = ['-', '--', '-.']
+    for index, (time, time1000) in enumerate(zip(total_times, total_times1000)):
+        plt.plot(query_range, [time, time1000], linestyles[index // 10])
 
-    plt.xlim([0,n_queries])
-    plt.gcf().legend(selection['params_bitlength_percentage'].round(2),loc="center right", title="bitlength percentage", borderaxespad=0.1)
-    plt.subplots_adjust(right = 0.85)
+    plt.xlim([0, n_queries])
+    plt.gcf().legend(selection['params_bitlength_percentage'].round(2), loc="center right",
+                     title="bitlength percentage", borderaxespad=0.1)
+    plt.subplots_adjust(right=0.85)
     plt.xlabel("number of queries")
     plt.ylabel("total time (s)")
     plt.title(f"Paramater optimization for FAISS LSH at {number} keyframes.")
     plt.savefig(fr".\test_data\plots\{plotfile}")
-
     plt.show()
 
+
 def store_hpo_ivf_data(filepath):
+    """
+    Store the data from the HPO for IVF in a latex table and create plots
+    :param filepath: The file in which the optuna study is stored
+    :return: A latex file with a table for the HPO
+    """
     n_queries = 1000
+
+    # Load the study and create a dataframe
     object = joblib.load(filepath)
     df = object.trials_dataframe(attrs=('number', 'value', 'params', 'state'))
-    latexfile = filepath.split("\\")[-1].split(".")[0]+'.tex'
+    # Create a latex file name and store the study data as a latex table
+    latexfile = filepath.split("\\")[-1].split(".")[0] + '.tex'
     with open(rf'.\test_data\latex\{latexfile}', 'w') as savefile:
-        savefile.write(df.to_latex(position  ='h!', label = 'app:rawFaissLSH' , index = False, caption = f'raw optuna study data for optimizing the bitlength atFAISS LSH at 270 frames'))
+        savefile.write(df.to_latex(position='h!', label='app:rawFaissLSH', index=False,
+                                   caption=f'Filler for caption'))
 
+    # Filter the data based on the requirements
     selection = df.query("values_0 >= 0.65 & values_1 >= 0.5 & state == 'COMPLETE'")
-
     search_times = selection['values_2']
     build_times = selection['values_3']
 
-    minima, breakpoints = calc_breakpoints(build_times,search_times,n_queries,len(selection))
+    # Calculate the breakpoints of the collected data
+    minima, breakpoints = calc_breakpoints(build_times, search_times, n_queries, len(selection))
 
     breakpoints = np.array(breakpoints)
     minima = np.array(minima)
     print(f"Breakpoints at indices: {breakpoints}")
     print(f"Dataframe entries of the indices: {minima[breakpoints]}")
 
+
 def store_hpo_hnsw_data(filepath):
+    """
+    Store the data from the HPO for HNSW in a latex table and create plots
+    :param filepath: The file in which the optuna study is stored
+    :return: A latex file with a table for the HPO
+    """
     n_queries = 1000
+    # Load the study and create a dataframe
     object = joblib.load(filepath)
     df = object.trials_dataframe(attrs=('number', 'value', 'params', 'state'))
-    latexfile = filepath.split("\\")[-1].split(".")[0]+'.tex'
+    # Create a latex file name and store the study data as a latex table
+    latexfile = filepath.split("\\")[-1].split(".")[0] + '.tex'
     with open(rf'.\test_data\latex\{latexfile}', 'w') as savefile:
-        savefile.write(df.to_latex(position  ='h!', label = 'app:rawFaissLSH' , index = False, caption = f'raw optuna study data for optimizing the bitlength atFAISS LSH at 270 frames'))
+        savefile.write(df.to_latex(position='h!', label='app:rawFaissLSH', index=False,
+                                   caption=f'Filler for caption'))
 
+    # Filter the data based on the requirements
     selection = df.query("values_0 >= 0.65 & values_1 >= 0.5 & state == 'COMPLETE'")
-
     search_times = selection['values_2']
     build_times = selection['values_3']
 
-    minima, breakpoints = calc_breakpoints(search_times,build_times, n_queries, len(selection))
+    # Calculate the breakpoints of the collected data
+    minima, breakpoints = calc_breakpoints(search_times, build_times, n_queries, len(selection))
 
     breakpoints = np.array(breakpoints)
     minima = np.array(minima)
@@ -486,20 +525,27 @@ def store_hpo_hnsw_data(filepath):
 
 
 def calc_breakpoints(build_times, search_times, n_queries, n_entries):
+    """
+    Calculate breakpoints between fastest methods
+    :param build_times: The array of build times per thing to be evaluared (HPO run/method/etc.)
+    :param search_times: TThe array of search times per thing to be evaluared (HPO run/method/etc.)
+    :param n_queries: The amount of queries to be evaluated
+    :param n_entries: The amount of entries to be evaluated (HPO runs/methods/etc.)
+    :return: The minima and breakpoints of the data
+    """
+    # Find the minima for each query
     minima = []
     for i in range(n_queries):
         minimum = np.inf
         min_ind = None
         for j in range(n_entries):
-            if j == 2:
-                continue
-            print(j)
-            res = build_times[j] + search_times[j]*i
+            res = build_times[j] + search_times[j] * i
             if res < minimum:
                 minimum = res
                 min_ind = j
         minima.append(min_ind)
 
+    # Find the breakpoints corresponding to the minima
     breakvalue = minima[0]
     breakpoints = [0]
     for ind, value in enumerate(minima):
@@ -510,25 +556,25 @@ def calc_breakpoints(build_times, search_times, n_queries, n_entries):
 
 
 def get_final_intersection_points():
-    methods = ['L2','FAISS flat L2 CPU', 'FAISS flat L2 GPU',
-               'FAISS HNSW', "FAISS LSH", 'FAISS IVF CPU',]
+    methods = ['L2', 'FAISS flat L2 CPU', 'FAISS flat L2 GPU',
+               'FAISS HNSW', "FAISS LSH", 'FAISS IVF CPU', ]
     methods = np.array(methods)
     max_queries = 1000
     n_queries = [1, max_queries]
 
     # Manually retrieved data for n_frames 270
-    search_times_270 = np.array([0.75,0.16,0.0,0.0,0.01])
-    build_times_270 = np.array([0, 1.0, 405.0,12.01,8.01 ])
+    search_times_270 = np.array([0.75, 0.16, 0.0, 0.0, 0.01])
+    build_times_270 = np.array([0, 1.0, 405.0, 12.01, 8.01])
 
     # Manually retrieved data for n_frames 8100
-    search_times_8100 = np.array([33.65, 0.35,0.02, 0.11, 0.03])
+    search_times_8100 = np.array([33.65, 0.35, 0.02, 0.11, 0.03])
     build_times_8100 = np.array([0, 9.01, 414.89, 206.19, 39.03])
 
     # Manually retrieved data for n_frames 50000
     search_times_50000 = np.array([219.54, 1.31, 0.09, 3.43, 0.2])
-    build_times_50000 = np.array([0, 54.96, 466.42,5045.29, 131.12 ])
+    build_times_50000 = np.array([0, 54.96, 466.42, 5045.29, 131.12])
 
-    build_times_per_frames = [build_times_270,build_times_8100, build_times_50000]
+    build_times_per_frames = [build_times_270, build_times_8100, build_times_50000]
     search_times_per_frames = [search_times_270, search_times_8100, search_times_50000]
 
     minima_per_frames = []
@@ -537,7 +583,7 @@ def get_final_intersection_points():
         for i in range(1000):
             minimum = np.inf
             min_ind = None
-            for j in range(len(methods)-1):
+            for j in range(len(methods) - 1):
                 res = build_times_per_frames[ind][j] + search_times_per_frames[ind][j] * i
                 if res < minimum:
                     minimum = res
@@ -558,21 +604,26 @@ def get_final_intersection_points():
         print(f"Methods: {methods[minima_per_frame[breakpoints]]}")
         print(f"Breakpoints:{breakpoints}")
 
+
 def break_points_15min():
-    df = pd.read_csv(r".\test_data\interp_selector_data.csv")
-    data = np.array([np.arange(270,4050, 270)])
-    data = np.append(data, np.array([np.arange(4050,50000,4050)]))
+    """
+    Determines the breakpoints for the selector
+    :return: A file that contains the breakpoint data for the selector
+    """
+    # Load in the data and specify the same number of frames used
+    df = pd.read_csv(r".\test_data\interp_selector_data_2.csv")
+    data = np.array([np.arange(270, 4050, 270)])
+    data = np.append(data, np.array([np.arange(4050, 50000, 4050)]))
     data = np.append(data, 50000)
     all = []
+    # Make selections of data based on the amount of frames
     for i in data:
         print(f"n_frames = {i}/50000")
         df_selec = df.query(f"n_frames=={i}")
         search_time = df_selec.iloc[:, 3].to_numpy()
         build_time = df_selec.iloc[:, 2].to_numpy()
-        print(build_time)
-        print(search_time)
 
-        method_array, breaks = calc_breakpoints(build_time,search_time,1000,5)
+        method_array, breaks = calc_breakpoints(build_time, search_time, 1000, 5)
         method_array[0] = method_array[1]
         all.append(method_array)
         # total_time1 = search_time
@@ -582,59 +633,57 @@ def break_points_15min():
         # plt.legend(["l","Flat cpu", "flat gpu","hnsw","lsh"])
         # plt.show()
 
+    # Make one big list of all the data and save it
     all = np.concatenate(all).ravel()
     # for i in range(len(all)):
     #     if all[i] > 1:
     #         all[i] +=1
-
-    print(all)
-    print(len(all))
     filename = r".\test_data\interp_data.npy"
     np.save(filename, np.array(all))
 
 
-# a + x - a - 1000x
-# a + 1000x
 def something():
     df = pd.read_csv(r".\test_data\15minresults.csv")
-    selection = df[df.iloc[:,4] <= 0.65]
-    selection2 = df[df.iloc[:,5] < 0.5]
+    selection = df[df.iloc[:, 4] <= 0.65]
+    selection2 = df[df.iloc[:, 5] < 0.5]
     print(selection)
     print(selection2)
+
 
 def validation_random():
     df = pd.read_csv(r".\test_data\15minresults6.csv")
     df.info()
     indices = []
-    for i in range(0,len(df),6):
+    for i in range(0, len(df), 6):
         selec = df.loc[i:i + 5]
         n_queries = df.loc[i].iloc[1]
-        minima = selec.iloc[:,3] + selec.iloc[:,4]*n_queries
+        minima = selec.iloc[:, 3] + selec.iloc[:, 4] * n_queries
         indices.append(minima.idxmin())
         print(min(minima))
     print(df.loc[indices])
+
 
 def plot_selector():
     methods = ["linear", "faiss_flat_cpu", "faiss_flat_gpu", "faiss_hnsw", "faiss_lsh", "faiss_ivf"]
     steps = 100
     total = []
-    for i in range(1, 50002, int(50000/steps)):
+    for i in range(1, 50002, int(50000 / steps)):
         data = []
-        for j in range(1, 1002, int(1000/steps)):
+        for j in range(1, 1002, int(1000 / steps)):
             data.append(method_selector(i, j, use_indices=True))
             print(f"{i, j}:/50000,1000")
         total.append(data)
 
-    total = np.array(total).flatten()
-    X, Y = np.meshgrid(range(1, 1002, int(1000/steps)), range(1, 50002, int(50000/steps)))
+    # total = np.array(total).flatten()
+    X, Y = np.meshgrid(range(1, 1002, int(1000 / steps)), range(1, 50002, int(50000 / steps)))
 
     cmap = mpl.cm.Set1
     norm = mpl.colors.BoundaryNorm([-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5], cmap.N)
 
-    # plt.pcolormesh(X, Y, total, cmap=cmap, clim=(0, 6))
-    plt.scatter(X,Y,total)
-    # cbar = plt.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), ticks=[0, 1, 2, 3, 4, 5])
-    # cbar.set_ticklabels(methods)
+    plt.pcolormesh(X, Y, total, cmap=cmap, clim=(0, 6))
+    # plt.scatter(X, Y, total)
+    cbar = plt.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), ticks=[0, 1, 2, 3, 4, 5])
+    cbar.set_ticklabels(methods)
     plt.title("Interpolation of method selector")
     plt.ylabel("number of keyframes")
     plt.xlabel("number of queries")
@@ -642,6 +691,7 @@ def plot_selector():
     plt.ylim([0, 50000])
     plt.savefig(os.path.abspath(r".\test_data\method_selectoraq2q1.png"))
     plt.show()
+
 
 if __name__ == "__main__":
     main()

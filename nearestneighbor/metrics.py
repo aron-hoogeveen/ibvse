@@ -22,7 +22,7 @@ def main():
     timevsk(methods, 25, 40,  'timevsk40')
     timevsk(methods, 25, 50,  'timevsk50')
 
-    #timevsk(methods, 25, 8100, 'timevsk8100')
+    # timevsk(methods, 25, 8100, 'timevsk8100')
     # timevsk(methods, 25, 50000,'timevsk50000')
     # annoy_forest_size(k_percentage, n_queries)  # 100 queries at 7.5% nearest neighbors
     # hnsw_m(k_percentage,n_queries)
