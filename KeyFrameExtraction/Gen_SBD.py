@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import cv2
 import numpy as np
 import os
@@ -13,9 +11,6 @@ from VSUMM_KE import *
 from VSUMM_combi import *
 from SIFT_KE import *
 import matplotlib.pyplot as plt
-
-start_time = time.time()
-
 
 __hist_size__ = 128             # how many bins for each R,G,B histogram
 __min_duration__ = 10           # if a shot has length less than this, merge it with others

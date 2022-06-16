@@ -1,11 +1,9 @@
 import sys
 import os
 import time
-# from SBD import *
 import numpy as np
 
 from Gen_SBD_test import *
-
 
 def save_keyframes(keyframe_indices, frames_data):
     print("Extracting keyframes")
@@ -23,6 +21,16 @@ def save_keyframes(keyframe_indices, frames_data):
         cv2.imwrite(name, frame_rgb)
 
 def keyframe_extraction(video_path, method, performSBD, presample):
+    """
+    Performs the extraction of keyframes of an input video and returns
+    :param video_path: the path to the input video
+    :param method: the method of keyframe extraction after performing shot detection
+    :param performSBD: boolean, perform shot boundary detection or not
+    :param presample: boolean, presample the input video for speed gain (default  = 10 fps)
+    :return: Indices of keyframes, corresponding rgb-data and video_fps
+    """
+
+
     print("Opening video: " + video_path)
     cap = cv2.VideoCapture(video_path)
     frame_count = cap.get(cv2.CAP_PROP_FRAME_COUNT)
