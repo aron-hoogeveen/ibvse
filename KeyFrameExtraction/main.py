@@ -1,16 +1,15 @@
 import sys
 import os
 import time
-import numpy as np
+
 from Gen_SBD import *
 
-<<<<<<< HEAD
 from Gen_SBD import *
 
 def save_keyframes(keyframe_indices, frames_data):
     print("Extracting keyframes")
     savepath = os.path.expanduser("~/bin/keyframes")
-=======
+
 def save_keyframes(keyframe_indices, frames_data, savepath = "keyframes"):
     """
     saves (key)frames into folder
@@ -19,7 +18,7 @@ def save_keyframes(keyframe_indices, frames_data, savepath = "keyframes"):
     """
     print("Extracting keyframes to " + str(savepath))
     #savepath = os.path.expanduser("~/bin/keyframes")
->>>>>>> f6811e3999a64262b6e0e7b51f0a1ddf282d8436
+
     try:
         if not os.path.exists(savepath):
             os.makedirs(savepath)
@@ -202,21 +201,17 @@ def print_statistics(frame_count, video_fps, keyframes_idx):
 
 
 if __name__ == '__main__':
-<<<<<<< HEAD
+
     print("Path:")
     print(sys.argv[1])
     kfe_time  = time.time()
     # methods: crudehistogram, firstmiddlelast, firstlast, firstonly, histogramblockclustering, shotdependentsampling
     #           VSUMM, VSUMM_combi, colormoments
-    KE_method = "VSUMM_combi"
+    KE_method = "histogramblockclustering"
     performSBD = True
     presample = False
-=======
-    KE_method = "histogramblockclustering"
-    performSBD = False
-    presample = True
-    kfe_time = time.time()
->>>>>>> f6811e3999a64262b6e0e7b51f0a1ddf282d8436
+
+
     keyframes_data, keyframe_indices, video_fps = keyframe_extraction(sys.argv[1], KE_method, performSBD, presample)
     #keyframes_data, keyframe_indices, video_fps = KE_uniform_sampling(sys.argv[1], 9, 0.85)
     print('\033[92m' + f' Total KeyframeExtraction time: {time.time() - kfe_time}' + '\033[0m')
