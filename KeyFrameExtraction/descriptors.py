@@ -1,8 +1,18 @@
+import cv2
+
 def createDescriptor(method, frame):
+    """
+    Generates descriptor for a frame using specified method
+    :param method: Chosen keyframe extraction method
+    :param frame: BGR-data of a frame
+    :return descriptor number/vector
+    """
 
     if method == "crudehistogram":
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        # calculate 8 bin histogram
         hist = cv2.calcHist([frame], [0, 1, 2], None, [8, 8, 8], [0, 256, 0, 256, 0, 256])
+        # flatten histogram
         hist = cv2.normalize(hist, None).flatten()
         descriptor = hist
     if method == "histogramblockclustering":
@@ -35,7 +45,8 @@ def createDescriptor(method, frame):
             h = h_chunk * a
             w = 0
 
-        descriptor = feature_vector # M = 1944 one dimensional feature vector for frame
+
+        descriptor = feature_vector # 1944 one dimensional feature vector for frame
 
     elif method == "VSUMM" or method == "VSUMM_combi":
         channels=['b','g','r']

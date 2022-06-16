@@ -1,4 +1,4 @@
-import cv2
+
 import numpy as np
 import os
 import sys
@@ -107,7 +107,10 @@ class shotDetector(object):
 
 
 def KFE(presample, skip_num, method, method_descriptors, shot_frame_number,totalpixels):
-
+    """
+    Applies chosen method to frames in shot using descriptors that were generated
+    :return indices of keyframes
+    """
     if method == "crudehistogram":
         keyframe_indices = histogram_summary(method_descriptors, shot_frame_number)
     elif method == "firstmiddlelast":
@@ -127,13 +130,25 @@ def KFE(presample, skip_num, method, method_descriptors, shot_frame_number,total
     elif method == "colormoments":
         keyframe_indices = colormoments(method_descriptors, shot_frame_number, totalpixels)
 
-
+    # multiply every index with skip_num if pre-sampling was performed to get correct indices
     if presample:
         keyframe_indices = [round(element * skip_num) for element in keyframe_indices]
+
     return keyframe_indices
 
 
 def SBD(cap, method, performSBD, presample, video_fps):
+    """
+    Performs shot based detection and calls keyframe extraction method to return indices
+    :param cap: the capture of input video
+    :param method: the method of keyframe extraction after performing shot detection (crudehistogram, firstmiddlelast, firstlast, firstonly, histogramblockclustering, VSUMM, VSUMM_combi, colormoments)
+    :param performSBD: boolean, perform shot boundary detection or not
+    :param presample: boolean, presample the input video for speed gain (default  = 10 fps)
+    :param video_fps: the framerate of input video
+    :return: indices of keyframes
+    """
+
+    # set timer
     time_SBD = time.time()
 
     sampling_rate = 10 # presampling to decrease computation time for reading frames
@@ -142,13 +157,15 @@ def SBD(cap, method, performSBD, presample, video_fps):
     if not performSBD:
         print("No SBD performed! Viewing video as one entire shot/segment")
         frame_count = 0
+
+        # Empty array to put feature descriptors in for chosen method
         method_descriptors = []
 
         width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
         height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
         totalpixels = width*height
 
-        if presample:
+        if presample:   #grab every n-thm frame
             count = 0
             while True:
                 success = cap.grab()
@@ -156,7 +173,7 @@ def SBD(cap, method, performSBD, presample, video_fps):
                     break
                 if int(count % skip_num) == 0:
                     ret, frame = cap.retrieve()
-                    method_descriptors.append(createDescriptor(method, frame))
+                    method_descriptors.append(createDescriptor(method, frame))  #add descriptor for current frame
                     frame_count += 1
                 count += 1
         else:
@@ -164,14 +181,12 @@ def SBD(cap, method, performSBD, presample, video_fps):
                 success, frame = cap.read()
                 if not success:
                     break
-                method_descriptors.append(createDescriptor(method, frame))
+                method_descriptors.append(createDescriptor(method, frame))  #add descriptor for current frame
                 frame_count += 1
 
 
-        shot_boundary = []
-        shot_boundary.append(0)
-        shot_boundary.append(frame_count)
-        print(shot_boundary)
+        shot_boundary = [0, frame_count]
+        print("Shot boundaries: " + str(shot_boundary))
         print('\033[94m' + f'Time to read (presampled) video and  generate descriptors for chosen method: {time.time() - time_SBD}' + '\033[0m')
 
     else: #  perform SBD

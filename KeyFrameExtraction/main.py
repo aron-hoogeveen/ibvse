@@ -2,7 +2,7 @@ import sys
 import os
 import time
 import numpy as np
-from Gen_SBD_test import *
+from Gen_SBD import *
 
 def save_keyframes(keyframe_indices, frames_data, savepath = "keyframes"):
     """
@@ -197,8 +197,8 @@ if __name__ == '__main__':
     KE_method = "histogramblockclustering"
     performSBD = False
     presample = True
-    #keyframes_data, keyframe_indices, video_fps = keyframe_extraction(sys.argv[1], KE_method, performSBD, presample)
     kfe_time = time.time()
-    keyframes_data, keyframe_indices, video_fps = KE_uniform_sampling(sys.argv[1], 9, 0.85)
+    keyframes_data, keyframe_indices, video_fps = keyframe_extraction(sys.argv[1], KE_method, performSBD, presample)
+    #keyframes_data, keyframe_indices, video_fps = KE_uniform_sampling(sys.argv[1], 9, 0.85)
     print('\033[92m' + f' Total KeyframeExtraction time: {time.time() - kfe_time}' + '\033[0m')
     #save_keyframes(keyframe_indices, keyframes_data)
