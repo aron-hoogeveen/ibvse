@@ -11,7 +11,7 @@ from SIFT_KE import *
 __hist_size__ = 128             # how many bins for each R,G,B histogram
 __min_duration__ = 10           # if a shot has length less than this, merge it with others
 __CFAR__ = True
-__SBD_method__ = "PBT"
+__SBD_method__ = "HBT"
 __PBT_method__ = "all"
 
 def PBT(method, cap, presample, skip_num):
