@@ -11,7 +11,7 @@ from sklearn.cluster import KMeans
 def VSUMM_combi(descriptors, shot_frame_number, skip_num):
 
 	# Percentage of keyframes taken
-	percent = int(5*skip_num)
+	percent = int(2*skip_num)
 
 	# converting percentage to actual number
 	num_centroids=int(percent*len(descriptors)/100)

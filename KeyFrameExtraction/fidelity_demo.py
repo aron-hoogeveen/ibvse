@@ -10,19 +10,31 @@ if __name__ == '__main__':
     print(sys.argv[1])
     path = sys.argv[1]
 
-    [hogs, hists, fdnorm, histnorm] = fidelity_descriptors(path)
+    #[hogs, hists, fdnorm, histnorm] = fidelity_descriptors(path)
     #
 
-    KE_method = "crudehistogram"
-    performSBD = True
+    KE_method = "VSUMM_combi"
+    performSBD = False
     presample = True
     keyframes_data, keyframe_indices, video_fps = keyframe_extraction(sys.argv[1], KE_method, performSBD, presample)
-    fid = fidelity(keyframe_indices, path, hists, hogs, fdnorm, histnorm)
-    print("Fidelity: " + str(fid))
+    save_keyframes(keyframe_indices, keyframes_data, "vsummcombimetpresample")
 
-    keyframes_data, keyframe_indices, video_fps = fast_uniform_sampling(sys.argv[1], 0.5, 0.85)
-    fid = fidelity(keyframe_indices, path, hists, hogs, fdnorm, histnorm)
-    print("Fidelity: " + str(fid))
+    #fid = fidelity(keyframe_indices, path, hists, hogs, fdnorm, histnorm)
+    #print("Fidelity: " + str(fid))
+
+
+    KE_method = "VSUMM_combi"
+    performSBD = False
+    presample = False
+    keyframes_data, keyframe_indices, video_fps = keyframe_extraction(sys.argv[1], KE_method, performSBD, presample)
+    save_keyframes(keyframe_indices, keyframes_data, "vsummcombizonderpresample")
+
+    #fid = fidelity(keyframe_indices, path, hists, hogs, fdnorm, histnorm)
+    #print("Fidelity: " + str(fid))
+
+    # keyframes_data, keyframe_indices, video_fps = fast_uniform_sampling(sys.argv[1], 0.5, 0.85)
+    # fid = fidelity(keyframe_indices, path, hists, hogs, fdnorm, histnorm)
+    #print("Fidelity: " + str(fid))
 
 
 
@@ -32,9 +44,9 @@ if __name__ == '__main__':
 
 
     #DEMO histogram bins HOGS and edges
-    cap = cv2.VideoCapture(sys.argv[1])
-    success, frame = cap.read()
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    # cap = cv2.VideoCapture(sys.argv[1])
+    # success, frame = cap.read()
+    # gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     #
     # #resize image for computational speed gain
