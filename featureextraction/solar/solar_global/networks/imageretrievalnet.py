@@ -13,7 +13,6 @@ from solar_global.layers.normalization import L2N, PowerLaw
 from solar_global.datasets.genericdataset import ImagesFromList, ImagesFromDataList
 from solar_global.utils.general import get_data_root
 from solar_global.networks.networks import ResNetSOAs
-from dataset.DatasetUtils import ImageDataset
 
 
 PRETRAINED = {
@@ -361,39 +360,6 @@ def extract_vectors_orig(net, root, images, image_size, transform, bbxs=None, ms
                     pbar.update(len(images) % print_freq)
 
     return vecs
-
-def extract_vectors_labels(net, labels, image_dir, transform, ms=[1], msp=1, print_freq=10):
-    # moving network to gpu and eval mode
-    net.cuda()
-    net.eval()
-
-    loader = torch.utils.data.DataLoader(
-        ImageDataset(labels, image_dir, transform), batch_size=1
-    )
-
-    # extracting vectors
-    with torch.no_grad():
-        # TODO swap the dimension of `vecs`
-        vecs = torch.zeros(net.meta['outputdim'], len(loader))
-        labels = np.zeros(len(loader))  # torch.zeros(1, len(loader))
-        names = [None] * len(loader)
-        with tqdm(total=len(loader)) as pbar:
-            for i, (_input, _label, _name) in enumerate(loader):
-                _input = _input.cuda()
-                labels[i] = _label
-                names[i] = _name
-
-                if len(ms) == 1 and ms[0] == 1:
-                    vecs[:, i] = extract_ss(net, _input)
-                else:
-                    vecs[:, i] = extract_ms(net, _input, ms, msp)
-
-                if (i+1) % print_freq == 0:
-                    pbar.update(print_freq)
-                elif (i+1) == len(loader):
-                    pbar.update(len(loader) % print_freq)
-
-    return vecs, labels, names
 
 def extract_ss(net, _input):
     return net(_input).cpu().data.squeeze()
