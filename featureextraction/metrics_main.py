@@ -1,4 +1,3 @@
-import torch
 import time
 import matplotlib.pyplot as plt
 import sys
@@ -6,7 +5,6 @@ import os
 import numpy as np
 from PIL import Image
 
-# sys.path.append(os.path.dirname(os.path.abspath('/featureextraction')))
 sys.path.append(os.path.dirname(os.path.abspath('./solar/solar_global')))
 from fe_main import extract_features_global
 

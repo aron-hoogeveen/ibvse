@@ -39,8 +39,6 @@ def plot_recall(_data):
 
 data = pd.read_csv('../../local-files/measurements/performance.csv')
 
-# Dutch Mailbox
-# data_mailbox = data[(data['name'] == 'dutch-mailbox') & (data['size'] == 144)]
 data_selection = data[(data['name'] == 'tudelft-ewi-2') & (data['search_image'] == 'ewi-tudelft-logo.jpg')]
 print(data_selection)
 plot_ap(data_selection)
