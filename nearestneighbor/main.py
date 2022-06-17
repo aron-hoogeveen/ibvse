@@ -75,7 +75,7 @@ def method_selector(n_frames_inter, n_queries_inter, use_indices = False):
     n_queries_inter = min(n_queries_inter, 1000)
 
     # load the selector data
-    method_idx = np.load(os.path.abspath(r".\test_data\interp_data.npy"), allow_pickle=True)
+    method_idx = np.load(os.path.abspath("./nearestneighbor/test_data/interp_data.npy"), allow_pickle=True)
 
     # create the x and y coordinates for the interpolation (different amounts of keyframes and query images)
     queries = np.array([np.arange(270,4050, 270)])
