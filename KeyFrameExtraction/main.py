@@ -3,12 +3,14 @@ import os
 import time
 
 from Gen_SBD import *
+from fidelity import *
 
 def save_keyframes(keyframe_indices, frames_data, savepath = "keyframes"):
     """
     saves (key)frames into folder
     :param keyframe_indices: indices of frame which will become file names
     :param frames_data: the corresponding RGB-data
+    :param savepath: path to save folder, default is /keyframes
     """
     print("Extracting keyframes to " + str(savepath))
     savepath = os.path.expanduser("~/bin/keyframes")
@@ -187,6 +189,7 @@ def print_statistics(frame_count, video_fps, keyframes_idx):
     :param video_fps: framerate of input video
     :param keyframes_idx: indices of keyframes (array)
     """
+
     print(f'>>> There are {len(keyframes_idx)} keyframes extracted (indices: {keyframes_idx}).')
     print("STATISTICS:")
     duration = frame_count/video_fps

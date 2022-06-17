@@ -17,7 +17,7 @@ def fidelity_descriptors(path):
     width  = cap.get(cv2.CAP_PROP_FRAME_WIDTH)   # float `width`
     height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
     histnorm = width * height  # to normalize color histogram with
-    downscale = 0.05  # downsize frame for lower computation for hogs
+    downscale = 0.5  # downsize frame for lower computation for hogs
     fdnorm = histnorm * (downscale) ** 2  # to normalize edge detection histogram
 
     fd_data = []
@@ -44,6 +44,9 @@ def fidelity_descriptors(path):
     return fd_data, hist_data, fdnorm, histnorm
 
 def fidelity(kf_indices, path, vseq_hists, vseq_hogs, fdnorm, histnorm):
+    """
+    Computes fidelity for a chosen selection of keyframes
+    """
     # cap = cv2.VideoCapture(os.path.abspath(os.path.expanduser(sys.argv[1])))
     # frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     # video_fps = cap.get(cv2.CAP_PROP_FPS)
@@ -183,4 +186,5 @@ def difference(hist1, hist2, fd1, fd2, fd_norm, hist_norm):
 
     d_d = distance.euclidean(n_fd, n_fd2)
 
-    return d_h*d_d
+
+    return d_h*d_d #originally d_h*d_w + d_h*d_d + d_d*d_w
