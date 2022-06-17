@@ -241,6 +241,7 @@ def SBD(cap, method, performSBD, presample, video_fps, CFAR, SBD_method, PBT_met
     # set timer
     time_SBD = time.time()
 
+
     sampling_rate = 10 # presampling to decrease computation time for reading frames
     skip_num = video_fps/sampling_rate # retrieve every n-th frame
 

@@ -13,7 +13,7 @@ def save_keyframes(keyframe_indices, frames_data, savepath = "keyframes"):
     :param savepath: path to save folder, default is /keyframes
     """
     print("Extracting keyframes to " + str(savepath))
-    savepath = os.path.expanduser("~/bin/keyframes")
+    #savepath = os.path.expanduser("~/bin/keyframes")
 
     try:
         if not os.path.exists(savepath):
