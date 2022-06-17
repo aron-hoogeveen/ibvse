@@ -10,7 +10,7 @@ from SIFT_KE import *
 
 __hist_size__ = 128             # how many bins for each R,G,B histogram
 __min_duration__ = 10           # if a shot has length less than this, merge it with others
-__CFAR__ = True
+__CFAR__ = False
 __SBD_method__ = "HBT"
 __PBT_method__ = "all"
 
@@ -104,7 +104,7 @@ def PBT(method, cap, presample, skip_num):
 
     # the real index start from 1 but time 0 and end add to it
     idx_new = copy.copy(frame_index)
-    # idx_new.insert(0, -1)
+    idx_new.insert(0, -1)
     # if n_frames - 1 - idx_new[-1] < min_dur:
     #     del idx_new[-1]
 
@@ -186,7 +186,7 @@ def HBT(method, cap, presample, skip_num):
 
     # the real index start from 1 but time 0 and end add to it
     idx_new = copy.copy(frame_index)
-    # idx_new.insert(0, -1)
+    idx_new.insert(0, -1)
     # if n_frames - 1 - idx_new[-1] < min_dur:
     #     del idx_new[-1]
     #print(self.n_frames)
