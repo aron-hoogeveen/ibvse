@@ -1,107 +1,197 @@
 
-import numpy as np
-import os
-import sys
-import math
+
 import copy
-import time
 from basicmethods import *
 from histogramblockclustering import *
 from VSUMM_KE import *
 from VSUMM_combi import *
 from descriptors import *
 from SIFT_KE import *
-import matplotlib.pyplot as plt
 
 __hist_size__ = 128             # how many bins for each R,G,B histogram
 __min_duration__ = 10           # if a shot has length less than this, merge it with others
 
-class shotDetector(object):
-    def __init__(self, min_duration=__min_duration__, output_dir=None):
-        self.min_duration = min_duration
-        self.output_dir = output_dir
-        self.factor = 5
-        self.n_frames = 0
-        self.method_descriptors = []
-        
-    def run(self, method, cap, presample, skip_num):
+def PBT(method, cap, presample, skip_num, CFAR, PBT_method):
+    width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+    height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    quotient = 256 * width * height
+    totalpixels = width * height
 
-        self.scores = []
-        hists = []
+    shot_boundary = []
+    shot_boundary.append(0)
+    framediff = []
+    method_descriptors = []
+    success, old_frame = cap.read()
+    method_descriptors.append(createDescriptor(method, old_frame))
+    old_frame = cv2.cvtColor(old_frame, cv2.COLOR_BGR2GRAY)
+    n_frames = 0
 
-        self.frame_count = cap.get(cv2.CAP_PROP_FRAME_COUNT)
-        self.fps = cap.get(cv2.CAP_PROP_FPS)
-        width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
-        height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-        totalpixels = width*height
+    if presample:
+        min_dur = int(__min_duration__/skip_num)
+        count = 0
+        while True:
+            success = cap.grab()
+            if not success:
+                break
+            if int(count % skip_num) == 0:
+                ret, frame = cap.retrieve()
+                method_descriptors.append(createDescriptor(method, frame))
+                frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                frame_old = np.array(old_frame) / quotient
+                frame_new = np.array(frame_gray) / quotient
 
-        if presample:
-            count = 0
-            frame_count = 0
-            while True:
-                success = cap.grab()
-                if not success:
-                    break
-                if int(count % skip_num) == 0:
-                    ret, frame = cap.retrieve()
-                    chists = [cv2.calcHist([frame], [c], None, [__hist_size__], [0, 256]) \
-                              for c in range(3)]
-                    chists = np.array([chist for chist in chists])
-                    hists.append(chists.flatten())
-                    self.method_descriptors.append(createDescriptor(method, frame))
-                    self.n_frames += 1
-                    frame_count += 1
-                count += 1
+                if PBT_method == "frame sum":
+                    framediff.append(np.abs(np.sum(frame_new) - np.sum(frame_old)))
+                else:
+                    framediff.append(np.sum(np.abs(np.subtract(frame_new, frame_old))))
+                old_frame = frame_gray
+                n_frames += 1
+            count += 1
+    else:
+        min_dur = int(__min_duration__)
+        success, frame = cap.read()
+        while success:
+            n_frames += 1
+            method_descriptors.append(createDescriptor(method, frame))
+
+            frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+            frame_old = np.array(old_frame)/quotient
+            frame_new = np.array(frame_gray)/quotient
+
+            if PBT_method == "frame sum":
+                framediff.append(np.abs(np.sum(frame_new) - np.sum(frame_old)))
+            else:
+                framediff.append(np.sum(np.abs(np.subtract(frame_new, frame_old))))
+            old_frame = frame_gray
+            success, frame = cap.read()
+
+
+    mean_diff = sum(framediff) / len(framediff)
+    frame_index = []
+
+    if CFAR == False:
+        factor = 6
+        for idx in range(len(framediff)):
+            if framediff[idx] > factor * mean_diff:
+                frame_index.append(idx)
+    else:
+        if PBT_method == "all":
+            factor = 6
         else:
-            while True:
+            factor = 2
+        conv = np.ones(5)
+        diffconv = np.convolve(framediff, conv) / 2
 
-                success, frame = cap.read()
-                if not success:
-                    break
-                chists = [cv2.calcHist([frame], [c], None, [__hist_size__], [0,256]) \
-                              for c in range(3)]
+        for j in range(len(framediff)):
+            if factor * mean_diff > diffconv[j]:
+                convthresh = factor * mean_diff
+            else:
+                convthresh = diffconv[j]
+
+            if framediff[j] >= convthresh:
+                frame_index.append(j)
+
+
+    tmp_idx = copy.copy(frame_index)
+    for i in range(0, len(frame_index) - 1):
+        if frame_index[i + 1] - frame_index[i] < min_dur:
+            del tmp_idx[tmp_idx.index(frame_index[i])]
+    frame_index = tmp_idx
+
+    # the real index start from 1 but time 0 and end add to it
+    idx_new = copy.copy(frame_index)
+    # idx_new.insert(0, -1)
+    # if n_frames - 1 - idx_new[-1] < min_dur:
+    #     del idx_new[-1]
+
+    idx_new.append(n_frames - 1)
+
+    idx_new = list(map(lambda x : x + 1, idx_new))
+
+    return totalpixels, method_descriptors, idx_new
+
+
+def HBT(method, cap, presample, skip_num, CFAR):
+
+    hists = []
+    method_descriptors = []
+    n_frames = 0
+
+    width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+    height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    totalpixels = width*height
+    if presample:
+        min_dur = int(__min_duration__/skip_num)
+        count = 0
+        while True:
+            success = cap.grab()
+            if not success:
+                break
+            if int(count % skip_num) == 0:
+                ret, frame = cap.retrieve()
+                chists = [cv2.calcHist([frame], [c], None, [__hist_size__], [0, 256]) \
+                          for c in range(3)]
                 chists = np.array([chist for chist in chists])
                 hists.append(chists.flatten())
-                self.method_descriptors.append(createDescriptor(method, frame))
-                self.n_frames += 1
+                method_descriptors.append(createDescriptor(method, frame))
+                n_frames += 1
+            count += 1
+    else:
+        min_dur = int(__min_duration__)
+        success, frame = cap.read()
+        while success:
+            chists = [cv2.calcHist([frame], [c], None, [__hist_size__], [0,256]) \
+                          for c in range(3)]
+            chists = np.array([chist for chist in chists])
+            hists.append(chists.flatten())
+            method_descriptors.append(createDescriptor(method, frame))
+            n_frames += 1
+            success, frame = cap.read()
 
-        # compute hist  distances
-        self.scores = [np.ndarray.sum(abs(pair[0] - pair[1])) for pair in zip(hists[1:], hists[:-1])]
+    # compute hist  distances
+    scores = [np.ndarray.sum(abs(pair[0] - pair[1])) for pair in zip(hists[1:], hists[:-1])]
 
-        # conv = np.ones(5)
-        # diffconv = np.convolve(self.scores, conv) / 2
-        #
-        #
-        # plt.plot(range(len(self.scores)), self.scores,
-        #          label='Frame difference')  # , range(len(diffconv)),diffconv, meane, pt)
-        # plt.plot(range(len(diffconv)), diffconv, label='CFAR threshold')
-        # plt.show()
-        return totalpixels
+    average_frame_div = sum(scores) / len(scores)
+    frame_index = []
 
-    def pick_frame(self, method):
-        average_frame_div = sum(self.scores)/len(self.scores)
-        self.frame_index = []
-        for idx in range(len(self.scores)):
-            if self.scores[idx] > self.factor * average_frame_div:
-                self.frame_index.append(idx)
-                
+    if CFAR == False:
+        factor = 6
+        for idx in range(len(scores)):
+            if scores[idx] > factor * average_frame_div:
+                frame_index.append(idx)
+    else:
+        factor = 3
+        conv = np.ones(5)
+        diffconv = np.convolve(scores, conv) / 2
 
-        tmp_idx = copy.copy(self.frame_index)
-        for i in range(0, len(self.frame_index) - 1):
-            if self.frame_index[i + 1] - self.frame_index[i] < __min_duration__:
-                del tmp_idx[tmp_idx.index(self.frame_index[i])]
-        self.frame_index = tmp_idx
+        for j in range(len(scores)):
+            if factor * average_frame_div > diffconv[j]:
+                convthresh = factor * average_frame_div
+            else:
+                convthresh = diffconv[j]
 
-        # the real index start from 1 but time 0 and end add to it
-        idx_new = copy.copy(self.frame_index)
-        idx_new.insert(0, -1)
-        if self.n_frames - 1 - idx_new[-1] < __min_duration__:
-            del idx_new[-1]
-        #print(self.n_frames)
-        idx_new.append(self.n_frames - 1)
+            if scores[j] > convthresh:
+                frame_index.append(j)
 
-        idx_new = list(map(lambda x : x + 1, idx_new))
-        return idx_new, self.method_descriptors
+
+    tmp_idx = copy.copy(frame_index)
+    for i in range(0, len(frame_index) - 1):
+        if frame_index[i + 1] - frame_index[i] < min_dur:
+            del tmp_idx[tmp_idx.index(frame_index[i])]
+    frame_index = tmp_idx
+
+    # the real index start from 1 but time 0 and end add to it
+    idx_new = copy.copy(frame_index)
+    # idx_new.insert(0, -1)
+    # if n_frames - 1 - idx_new[-1] < min_dur:
+    #     del idx_new[-1]
+    #print(self.n_frames)
+    idx_new.append(n_frames - 1)
+
+    idx_new = list(map(lambda x : x + 1, idx_new))
+
+    return totalpixels, method_descriptors, idx_new
 
 
 
@@ -137,7 +227,7 @@ def KFE(presample, skip_num, method, method_descriptors, shot_frame_number,total
     return keyframe_indices
 
 
-def SBD(cap, method, performSBD, presample, video_fps):
+def SBD(cap, method, performSBD, presample, video_fps, CFAR, SBD_method, PBT_method):
     """
     Performs shot based detection and calls keyframe extraction method to return indices
     :param cap: the capture of input video
@@ -190,10 +280,11 @@ def SBD(cap, method, performSBD, presample, video_fps):
         print('\033[94m' + f'Time to read (presampled) video and  generate descriptors for chosen method: {time.time() - time_SBD}' + '\033[0m')
 
     else: #  perform SBD
-        detector = shotDetector()
-        totalpixels = detector.run(method, cap, presample, skip_num)
 
-        shot_boundary, method_descriptors = detector.pick_frame(method)
+        if SBD_method == "PBT":
+            totalpixels, method_descriptors, shot_boundary = PBT(method, cap, presample, skip_num, CFAR, PBT_method)
+        else:
+            totalpixels, method_descriptors, shot_boundary = HBT(method, cap, presample, skip_num, CFAR)
 
         if presample:
             actual_shot_boundary = [round(element * skip_num) for element in shot_boundary]
