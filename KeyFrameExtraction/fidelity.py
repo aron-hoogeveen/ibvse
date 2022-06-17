@@ -7,7 +7,6 @@ import glob
 import random
 from main import *
 from scipy.spatial import distance
-from skimage.feature import hog
 from math import atan2
 
 def fidelity_descriptors(path):

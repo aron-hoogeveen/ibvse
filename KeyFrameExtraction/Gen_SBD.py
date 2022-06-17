@@ -10,8 +10,11 @@ from SIFT_KE import *
 
 __hist_size__ = 128             # how many bins for each R,G,B histogram
 __min_duration__ = 10           # if a shot has length less than this, merge it with others
+__CFAR__ = True
+__SBD_method__ = "HBT"
+__PBT_method__ = "all"
 
-def PBT(method, cap, presample, skip_num, CFAR, PBT_method):
+def PBT(method, cap, presample, skip_num):
     width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
     height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
     quotient = 256 * width * height
@@ -40,7 +43,7 @@ def PBT(method, cap, presample, skip_num, CFAR, PBT_method):
                 frame_old = np.array(old_frame) / quotient
                 frame_new = np.array(frame_gray) / quotient
 
-                if PBT_method == "frame sum":
+                if __PBT_method__ == "all":
                     framediff.append(np.abs(np.sum(frame_new) - np.sum(frame_old)))
                 else:
                     framediff.append(np.sum(np.abs(np.subtract(frame_new, frame_old))))
@@ -59,7 +62,7 @@ def PBT(method, cap, presample, skip_num, CFAR, PBT_method):
             frame_old = np.array(old_frame)/quotient
             frame_new = np.array(frame_gray)/quotient
 
-            if PBT_method == "frame sum":
+            if __PBT_method__ == "all":
                 framediff.append(np.abs(np.sum(frame_new) - np.sum(frame_old)))
             else:
                 framediff.append(np.sum(np.abs(np.subtract(frame_new, frame_old))))
@@ -70,13 +73,13 @@ def PBT(method, cap, presample, skip_num, CFAR, PBT_method):
     mean_diff = sum(framediff) / len(framediff)
     frame_index = []
 
-    if CFAR == False:
+    if __CFAR__ == False:
         factor = 6
         for idx in range(len(framediff)):
             if framediff[idx] > factor * mean_diff:
                 frame_index.append(idx)
     else:
-        if PBT_method == "all":
+        if __PBT_method__ == "all":
             factor = 6
         else:
             factor = 2
@@ -112,7 +115,7 @@ def PBT(method, cap, presample, skip_num, CFAR, PBT_method):
     return totalpixels, method_descriptors, idx_new
 
 
-def HBT(method, cap, presample, skip_num, CFAR):
+def HBT(method, cap, presample, skip_num):
 
     hists = []
     method_descriptors = []
@@ -155,7 +158,7 @@ def HBT(method, cap, presample, skip_num, CFAR):
     average_frame_div = sum(scores) / len(scores)
     frame_index = []
 
-    if CFAR == False:
+    if __CFAR__ == False:
         factor = 6
         for idx in range(len(scores)):
             if scores[idx] > factor * average_frame_div:
@@ -227,7 +230,7 @@ def KFE(presample, skip_num, method, method_descriptors, shot_frame_number,total
     return keyframe_indices
 
 
-def SBD(cap, method, performSBD, presample, video_fps, CFAR, SBD_method, PBT_method):
+def SBD(cap, method, performSBD, presample, video_fps):
     """
     Performs shot based detection and calls keyframe extraction method to return indices
     :param cap: the capture of input video
@@ -282,10 +285,10 @@ def SBD(cap, method, performSBD, presample, video_fps, CFAR, SBD_method, PBT_met
 
     else: #  perform SBD
 
-        if SBD_method == "PBT":
-            totalpixels, method_descriptors, shot_boundary = PBT(method, cap, presample, skip_num, CFAR, PBT_method)
+        if __SBD_method__ == "PBT":
+            totalpixels, method_descriptors, shot_boundary = PBT(method, cap, presample, skip_num)
         else:
-            totalpixels, method_descriptors, shot_boundary = HBT(method, cap, presample, skip_num, CFAR)
+            totalpixels, method_descriptors, shot_boundary = HBT(method, cap, presample, skip_num)
 
         if presample:
             actual_shot_boundary = [round(element * skip_num) for element in shot_boundary]
