@@ -1,35 +1,30 @@
 import time
 import hnswlib
-import numpy as np
-import pickle
 
 
 def hnsw_add(image_feature, max_elements, filename="hnswresult", space='l2', ef=10, ef_const=10, init=True, M = 16):
     """
-    :param image_feature: array of feature vectors
-    :param max_elements: max allowed elements in graph, should be close to total amount of elements
-    :param filename: save file name
+    Partitioning of the data for HNSW
+    :param image_feature: The n-dimensional feature vectors of the keyframes
+    :param max_elements: Max allowed elements in graph, should be close to total amount of elements
+    :param filename: Save file name
     :param space: The space metric (l2, cosine or ip)
-    :param ef: query time accuracy speed trade-off: higher ef leads to better accuracy but slower search
-    :param ef_const: parameter that controls speed/accuracy trade-off during the index construction.
-    :param init: Should a new graph be built?
+    :param ef: Query time accuracy speed trade-off: higher ef leads to better accuracy but slower search
+    :param ef_const: Parameter that controls speed/accuracy trade-off during the index construction.
+    :param init: Indicates if a new graph should be build
+    :param M: The maximum amount of connections per node in the graph
     :return: Save file with encoded graph
     """
     t1 = time.time()
     _, dim = image_feature.shape
-    p = hnswlib.Index(space=space, dim=dim)  # possible options are l2, cosine or ip
-    if init:
+    p = hnswlib.Index(space=space, dim=dim)  # Create a HNSW index
+    if init:  # create a new graph or load an existing one
         p.init_index(max_elements=max_elements, ef_construction=ef_const, M=M)
     else:
         p.load_index(f"{filename}.bin", max_elements=max_elements)
-        # Controlling the recall by setting ef:
-        # higher ef leads to better accuracy, but slower search
+
+    #  Build the graph
     p.set_ef(ef)
-
-    # Set number of threads used during batch search/construction
-    # By default using all available cores
-
-    # image_features_array = np.array(image_feature)
     p.add_items(image_feature)
     p.save_index(f"{filename}.bin")
     t2 = time.time()
@@ -39,21 +34,21 @@ def hnsw_add(image_feature, max_elements, filename="hnswresult", space='l2', ef=
 
 def hnsw_search(image_features, k, filename="hnswresult", space='l2', ef=10):
     """
-    Searches the HNSW Graph
-    :param image_features: array of feature vectors
-    :param k: amount of NN
-    :param filename: save file name
+    Searche the HNSW graph
+    :param image_features: The n-dimensional feature vectors of the query images
+    :param k: Amount of Nearest Neighbours
+    :param filename: Save file name
     :param space: The space metric (l2, cosine or ip)
-    :param ef: query time accuracy speed trade-off: higher ef leads to better accuracy but slower search
+    :param ef: Query time accuracy speed trade-off: higher ef leads to better accuracy but slower search
     :return: k closest neighbours and their distances
     """
     t1 = time.time()
 
     num_test, dim = image_features.shape
-    p = hnswlib.Index(space=space, dim=dim)  # possible options are l2, cosine or ip
-    p.load_index(f"{filename}.bin")
+    p = hnswlib.Index(space=space, dim=dim)  # Create a new index
+    p.load_index(f"{filename}.bin")  # Load the stored data into the index
     p.set_ef(ef)
-    idx, distances = p.knn_query(image_features, k)  # will find the k nearest neighbors
+    idx, distances = p.knn_query(image_features, k)  # Find the k nearest neighbours
 
     t2 = time.time()
     time_per_query = (t2 - t1) / num_test
