@@ -13,20 +13,27 @@ def main():
         # 'Battuta1',
         # 'Battuta1',
         # 'Battuta1'
+
+        # 'Battuta2',
         #
-        'Battuta2',
+        # 'He1',
+        # 'He1',
+        # 'He1',
+        #
+        # 'He2',
+        #
+        # 'He3',
+        # 'He3',
+        # 'He3',
+        #
+        # 'Polo1'
 
-        'He1',
-        'He1',
-        'He1',
+        # 'tudelft-ewi-1',
+        # 'tudelft-ewi-2',
+        # 'dutch-mailbox-2',
 
-        'He2',
-
-        'He3',
-        'He3',
-        'He3',
-
-        'Polo1'
+        'smirnoff-ice-crop',
+        'smirnoff-ice-crop-logo'
     ]
     lst_frame_paths = [
         # list(f'/home/aron/Videos/traveller-videos-sparse/videos/Battuta1/frame_{x:03d}.jpg'
@@ -38,28 +45,40 @@ def main():
         # list(f'/home/aron/Videos/traveller-videos-sparse/videos/Battuta1/frame_{x:03d}.jpg'
         #      for x in range(0, 524))
 
-        list(f'/home/aron/Videos/traveller-videos-sparse/videos/Battuta2/frame_{x:03d}.jpg'
-             for x in range(0, 379)),
+        # list(f'/home/aron/Videos/traveller-videos-sparse/videos/Battuta2/frame_{x:03d}.jpg'
+        #      for x in range(0, 379)),
+        #
+        # list(f'/home/aron/Videos/traveller-videos-sparse/videos/He1/frame_{x:03d}.jpg'
+        #      for x in range(0, 550)),
+        # list(f'/home/aron/Videos/traveller-videos-sparse/videos/He1/frame_{x:03d}.jpg'
+        #      for x in range(0, 550)),
+        # list(f'/home/aron/Videos/traveller-videos-sparse/videos/He1/frame_{x:03d}.jpg'
+        #      for x in range(0, 550)),
+        #
+        # list(f'/home/aron/Videos/traveller-videos-sparse/videos/He2/frame_{x:03d}.jpg'
+        #      for x in range(0, 228)),
+        #
+        # list(f'/home/aron/Videos/traveller-videos-sparse/videos/He3/frame_{x:03d}.jpg'
+        #      for x in range(0, 377)),
+        # list(f'/home/aron/Videos/traveller-videos-sparse/videos/He3/frame_{x:03d}.jpg'
+        #      for x in range(0, 377)),
+        # list(f'/home/aron/Videos/traveller-videos-sparse/videos/He3/frame_{x:03d}.jpg'
+        #      for x in range(0, 377)),
+        #
+        # list(f'/home/aron/Videos/traveller-videos-sparse/videos/Polo1/frame_{x:03d}.jpg'
+        #      for x in range(0, 649))
 
-        list(f'/home/aron/Videos/traveller-videos-sparse/videos/He1/frame_{x:03d}.jpg'
-             for x in range(0, 550)),
-        list(f'/home/aron/Videos/traveller-videos-sparse/videos/He1/frame_{x:03d}.jpg'
-             for x in range(0, 550)),
-        list(f'/home/aron/Videos/traveller-videos-sparse/videos/He1/frame_{x:03d}.jpg'
-             for x in range(0, 550)),
+        # list(f'/home/aron/Videos/deja-vu-dataset/videos/tudelft-ewi-1/frame_{x:03d}.jpg'
+        #      for x in range(0, 89)),
+        # list(f'/home/aron/Videos/deja-vu-dataset/videos/tudelft-ewi-2/frame_{x:03d}.jpg'
+        #      for x in range(0, 77)),
+        # list(f'/home/aron/Videos/deja-vu-dataset/videos/dutch-mailbox-2/frame_{x:03d}.jpg'
+        #      for x in range(0, 112))
 
-        list(f'/home/aron/Videos/traveller-videos-sparse/videos/He2/frame_{x:03d}.jpg'
-             for x in range(0, 228)),
-
-        list(f'/home/aron/Videos/traveller-videos-sparse/videos/He3/frame_{x:03d}.jpg'
-             for x in range(0, 377)),
-        list(f'/home/aron/Videos/traveller-videos-sparse/videos/He3/frame_{x:03d}.jpg'
-             for x in range(0, 377)),
-        list(f'/home/aron/Videos/traveller-videos-sparse/videos/He3/frame_{x:03d}.jpg'
-             for x in range(0, 377)),
-
-        list(f'/home/aron/Videos/traveller-videos-sparse/videos/Polo1/frame_{x:03d}.jpg'
-             for x in range(0, 649))
+        list(f'/home/aron/Videos/deja-vu-dataset/videos/ice-inside-2-shot/frame_{x:03d}.jpg'
+             for x in range(0, 108)),
+        list(f'/home/aron/Videos/deja-vu-dataset/videos/ice-inside-2-shot/frame_{x:03d}.jpg'
+             for x in range(0, 108))
     ]
     lst_image_path = [
         # '/home/aron/Videos/traveller-videos-sparse/images/all_images/1.png',
@@ -67,19 +86,26 @@ def main():
         # '/home/aron/Videos/traveller-videos-sparse/images/all_images/3.png',
         # '/home/aron/Videos/traveller-videos-sparse/images/all_images/4.png'
 
-        '/home/aron/Videos/traveller-videos-sparse/images/all_images/81.png',
+        # '/home/aron/Videos/traveller-videos-sparse/images/all_images/81.png',
+        #
+        # '/home/aron/Videos/traveller-videos-sparse/images/all_images/22.png',
+        # '/home/aron/Videos/traveller-videos-sparse/images/all_images/23.png',
+        # '/home/aron/Videos/traveller-videos-sparse/images/all_images/24.png',
+        #
+        # '/home/aron/Videos/traveller-videos-sparse/images/all_images/405.png',
+        #
+        # '/home/aron/Videos/traveller-videos-sparse/images/all_images/411.png',
+        # '/home/aron/Videos/traveller-videos-sparse/images/all_images/412.png',
+        # '/home/aron/Videos/traveller-videos-sparse/images/all_images/413.png',
+        #
+        # '/home/aron/Videos/traveller-videos-sparse/images/all_images/11.png'
 
-        '/home/aron/Videos/traveller-videos-sparse/images/all_images/22.png',
-        '/home/aron/Videos/traveller-videos-sparse/images/all_images/23.png',
-        '/home/aron/Videos/traveller-videos-sparse/images/all_images/24.png',
+        # '/home/aron/Videos/deja-vu-dataset/images/ewi-tudelft-1.jpg',
+        # '/home/aron/Videos/deja-vu-dataset/images/ewi-tudelft-1.jpg',
+        # '/home/aron/Videos/deja-vu-dataset/images/dutch-mailbox.jpg'
 
-        '/home/aron/Videos/traveller-videos-sparse/images/all_images/405.png',
-
-        '/home/aron/Videos/traveller-videos-sparse/images/all_images/411.png',
-        '/home/aron/Videos/traveller-videos-sparse/images/all_images/412.png',
-        '/home/aron/Videos/traveller-videos-sparse/images/all_images/413.png',
-
-        '/home/aron/Videos/traveller-videos-sparse/images/all_images/11.png'
+        '/home/aron/Videos/deja-vu-dataset/images/empty-ice-crop.jpg',
+        '/home/aron/Videos/deja-vu-dataset/images/empty-ice-crop-logo.jpg'
     ]
     lst_labels_file = [
         # '/home/aron/Videos/traveller-videos-sparse/videos/Battuta1/labels-ranges-1.csv',
@@ -87,19 +113,26 @@ def main():
         # '/home/aron/Videos/traveller-videos-sparse/videos/Battuta1/labels-ranges-3.csv',
         # '/home/aron/Videos/traveller-videos-sparse/videos/Battuta1/labels-ranges-4.csv'
 
-        '/home/aron/Videos/traveller-videos-sparse/videos/Battuta2/labels-ranges-81.csv',
+        # '/home/aron/Videos/traveller-videos-sparse/videos/Battuta2/labels-ranges-81.csv',
+        #
+        # '/home/aron/Videos/traveller-videos-sparse/videos/He1/labels-ranges-22.csv',
+        # '/home/aron/Videos/traveller-videos-sparse/videos/He1/labels-ranges-23.csv',
+        # '/home/aron/Videos/traveller-videos-sparse/videos/He1/labels-ranges-24.csv',
+        #
+        # '/home/aron/Videos/traveller-videos-sparse/videos/He2/labels-ranges-405.csv',
+        #
+        # '/home/aron/Videos/traveller-videos-sparse/videos/He3/labels-ranges-411.csv',
+        # '/home/aron/Videos/traveller-videos-sparse/videos/He3/labels-ranges-412.csv',
+        # '/home/aron/Videos/traveller-videos-sparse/videos/He3/labels-ranges-413.csv',
+        #
+        # '/home/aron/Videos/traveller-videos-sparse/videos/Polo1/labels-ranges-11.csv'
 
-        '/home/aron/Videos/traveller-videos-sparse/videos/He1/labels-ranges-22.csv',
-        '/home/aron/Videos/traveller-videos-sparse/videos/He1/labels-ranges-23.csv',
-        '/home/aron/Videos/traveller-videos-sparse/videos/He1/labels-ranges-24.csv',
+        # '/home/aron/Videos/deja-vu-dataset/videos/tudelft-ewi-1/labels.csv',
+        # '/home/aron/Videos/deja-vu-dataset/videos/tudelft-ewi-2/labels.csv',
+        # '/home/aron/Videos/deja-vu-dataset/videos/dutch-mailbox-2/labels.csv'
 
-        '/home/aron/Videos/traveller-videos-sparse/videos/He2/labels-ranges-405.csv',
-
-        '/home/aron/Videos/traveller-videos-sparse/videos/He3/labels-ranges-411.csv',
-        '/home/aron/Videos/traveller-videos-sparse/videos/He3/labels-ranges-412.csv',
-        '/home/aron/Videos/traveller-videos-sparse/videos/He3/labels-ranges-413.csv',
-
-        '/home/aron/Videos/traveller-videos-sparse/videos/Polo1/labels-ranges-11.csv'
+        '/home/aron/Videos/deja-vu-dataset/videos/ice-inside-2-shot/labels.csv',
+        '/home/aron/Videos/deja-vu-dataset/videos/ice-inside-2-shot/labels.csv'
     ]
     lst_out_file = [
         # '/home/aron/repos/ibvse/featureextraction/measurements/battuta1_1.csv',
@@ -107,19 +140,26 @@ def main():
         # '/home/aron/repos/ibvse/featureextraction/measurements/battuta1_3.csv',
         # '/home/aron/repos/ibvse/featureextraction/measurements/battuta1_4.csv'
 
-        '/home/aron/repos/ibvse/featureextraction/measurements/battuta2_88.csv',
+        # '/home/aron/repos/ibvse/featureextraction/measurements/battuta2_88.csv',
+        #
+        # '/home/aron/repos/ibvse/featureextraction/measurements/he1_22.csv',
+        # '/home/aron/repos/ibvse/featureextraction/measurements/he1_23.csv',
+        # '/home/aron/repos/ibvse/featureextraction/measurements/he1_24.csv',
+        #
+        # '/home/aron/repos/ibvse/featureextraction/measurements/he2_405.csv',
+        #
+        # '/home/aron/repos/ibvse/featureextraction/measurements/he3_411.csv',
+        # '/home/aron/repos/ibvse/featureextraction/measurements/he3_412.csv',
+        # '/home/aron/repos/ibvse/featureextraction/measurements/he3_413.csv',
+        #
+        # '/home/aron/repos/ibvse/featureextraction/measurements/polo1_11.csv'
 
-        '/home/aron/repos/ibvse/featureextraction/measurements/he1_22.csv',
-        '/home/aron/repos/ibvse/featureextraction/measurements/he1_23.csv',
-        '/home/aron/repos/ibvse/featureextraction/measurements/he1_24.csv',
+        # '/home/aron/repos/ibvse/featureextraction/measurements/tudelft-ewi-1.csv',
+        # '/home/aron/repos/ibvse/featureextraction/measurements/tudelft-ewi-2.csv',
+        # '/home/aron/repos/ibvse/featureextraction/measurements/dutch-mailbox-2.csv'
 
-        '/home/aron/repos/ibvse/featureextraction/measurements/he2_405.csv',
-
-        '/home/aron/repos/ibvse/featureextraction/measurements/he3_411.csv',
-        '/home/aron/repos/ibvse/featureextraction/measurements/he3_412.csv',
-        '/home/aron/repos/ibvse/featureextraction/measurements/he3_413.csv',
-
-        '/home/aron/repos/ibvse/featureextraction/measurements/polo1_11.csv'
+        '/home/aron/repos/ibvse/featureextraction/measurements/empty-ice-crop.csv',
+        '/home/aron/repos/ibvse/featureextraction/measurements/empty-ice-crop-logo.csv'
     ]
 
     for n, f_p, i_p, l_f, o_f in zip(names, lst_frame_paths, lst_image_path, lst_labels_file, lst_out_file):
@@ -144,9 +184,10 @@ def test_inputs_outputs(name, frame_paths, image_path, labels_file, out_file):
         'k': [],
         'size': []
     }
-    # sizes = [144, 180, 240, 360, 480, 540, 576, 720]
-    sizes = [576]
+    sizes = [144, 180, 240, 360, 480, 540, 576, 720]
+    # sizes = [576]
     for size in sizes:
+        print(f'Current run: {name}, size={size}.')
         # Read in test images.
         image_paths = [image_path]
         search_images = []
