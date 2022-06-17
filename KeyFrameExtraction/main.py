@@ -27,16 +27,13 @@ def save_keyframes(keyframe_indices, frames_data, savepath = "keyframes"):
         name = savepath + '/' + str(keyframe_indices[i]) + '.jpg'
         cv2.imwrite(name, frame_rgb)
 
-def keyframe_extraction(video_path, method, performSBD, presample, CFAR, SBD_method, PBT_method):
+def keyframe_extraction(video_path, method, performSBD, presample):
     """
     Performs the extraction of keyframes of an input video
     :param video_path: the path to the input video
     :param method: the method of keyframe extraction after performing shot detection (crudehistogram, firstmiddlelast, firstlast, firstonly, histogramblockclustering, VSUMM, VSUMM_combi, colormoments)
     :param performSBD: boolean, perform shot boundary detection or not
     :param presample: boolean, presample the input video for speed gain (default  = 10 fps)
-    :param CFAR: boolean, use additional CFAR threshold or not
-    :param SBD_method: the method of SBD (PBT or HBT)
-    :param PBT_method: the method of PBT (all or pixel)
     :return: Indices of keyframes, corresponding rgb-data and video_fps
     """
 
@@ -50,7 +47,7 @@ def keyframe_extraction(video_path, method, performSBD, presample, CFAR, SBD_met
     method_time = time.time()
 
     print('>>> Performing Shot Based Detection')
-    keyframes_indices = SBD(cap, method, performSBD, presample, video_fps, CFAR, SBD_method, PBT_method)
+    keyframes_indices = SBD(cap, method, performSBD, presample, video_fps)
 
     # # Convert [[x,x,x], [x,x,x,x], [x,x,x,x], ... ] to one axis array
     keyframes_idx = []
@@ -204,11 +201,8 @@ if __name__ == '__main__':
     KE_method = "histogramblockclustering"
     performSBD = True
     presample = True
-    CFAR = True
-    SBD_method = "PBT"
-    PBT_method = "all"
     kfe_time = time.time()
-    keyframes_data, keyframe_indices, video_fps = keyframe_extraction(sys.argv[1], KE_method, performSBD, presample, CFAR, SBD_method, PBT_method)
+    keyframes_data, keyframe_indices, video_fps = keyframe_extraction(sys.argv[1], KE_method, performSBD, presample)
     #keyframes_data, keyframe_indices, video_fps = KE_uniform_sampling(sys.argv[1], 9, 0.85)
     print('\033[92m' + f' Total KeyframeExtraction time: {time.time() - kfe_time}' + '\033[0m')
     save_keyframes(keyframe_indices, keyframes_data)
