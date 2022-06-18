@@ -37,6 +37,7 @@ def nns(frame_features_in, image_features_in):
 
     # select method and call the corresponding function
     method = method_selector(n_frames, n_queries)
+    print(method)
     if method.lower() == 'linear':
         nns_res, dist, _ = nn_linear.matching_L2(k, frame_features_in, image_features_in)
 
@@ -100,8 +101,6 @@ def method_selector(n_frames_inter, n_queries_inter, use_indices = False):
     # convert index to a method name
     methods = ["linear", "faiss_flat_cpu", "faiss_flat_gpu", "faiss_hnsw", "faiss_lsh","faiss_ivf"]
     return interp_res if use_indices else methods[interp_res]
-
-print(method_selector(270,1))
 
 # WHAT TO DO WITH THESE?
 # frames = np.load(r".\data\frames.npy")

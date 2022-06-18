@@ -64,7 +64,7 @@ def main(use_args, input_video, input_images: [str]):
             img = img[..., :3]  # disregard the alpha layer if it is present
         query_images.append(img)
 
-    print('OI MATE NO GUD PRINT STATEMENT')
+
 
     kfe_start_time = time.time()
     keyframes_data, indices, fps = keyframe_extraction(input_video, 'VSUMM_combi', True, True)
@@ -79,6 +79,11 @@ def main(use_args, input_video, input_images: [str]):
 
     print('>>> Performing Nearest Neighbour Search')
     nn_start_time = time.time()
+
+    query_features = query_features.numpy()
+    frame_features = frame_features.numpy()
+    query_features = np.ascontiguousarray(query_features, dtype=np.float32)
+    frame_features = np.ascontiguousarray(frame_features, dtype=np.float32)
     idx, dist, _ = nns(frame_features, query_features)
     nn_end_time = time.time()
     nn_time = nn_end_time - nn_start_time

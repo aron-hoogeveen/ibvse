@@ -23,7 +23,7 @@ class VideoPlayer(QMainWindow):
 
         self.playButton = QPushButton()
         self.playButton.setEnabled(False)
-        self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPause))
+        self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
         self.playButton.clicked.connect(self.play)
 
         self.positionSlider = QSlider(Qt.Horizontal)
@@ -108,7 +108,8 @@ class VideoPlayer(QMainWindow):
         self.openFile()
         self.mediaPlayer.setPosition(self.timestamp)
         self.mediaPlayer.play()
-
+        self.mediaPlayer.pause()
     def newTimestamp(self, timestamp):
         self.timestamp = timestamp
         self.mediaPlayer.setPosition(self.timestamp)
+        self.mediaPlayer.pause()
