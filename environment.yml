@@ -26,3 +26,4 @@ dependencies:
       - hnswlib
       - annoy
       - opencv-python
+      - PyQt5
