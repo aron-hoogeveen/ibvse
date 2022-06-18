@@ -51,8 +51,9 @@ import time
 import os
 import sys
 from PyQt5.QtWidgets import (QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QPlainTextEdit, QApplication,
-                             QFileDialog, QFrame, QMessageBox, QTabWidget,QTextBrowser, QComboBox, QLabel)
+                             QFileDialog, QFrame, QMessageBox, QTabWidget,QTextBrowser, QComboBox, QSlider, QLabel)
 import prototype_main
+from PyQt5.QtGui import QIcon
 import PyQt5.QtCore as QtCore
 import gui_videplayer
 
@@ -62,13 +63,14 @@ class Window(QWidget):
         Initializer for the class that creates the GUI window
         """
         super().__init__(parent)
+        self.setWindowIcon(QIcon(r'./logo.png'))
         self.timeslots = []
         self.layout = QVBoxLayout()
         self.setGeometry(150, 150, 750, 400)
         self.layout.setContentsMargins(10, 10, 10, 10)
         self.init_gui()
         self.setLayout(self.layout)
-        self.setWindowTitle("BAP group H | Video search engine")
+        self.setWindowTitle("BAP group H | Image Based Video Search Engine")
 
         self.videos = None  # List containing all the paths to the videos
         self.images = None  # List containing all the paths to the images
@@ -195,6 +197,7 @@ class Window(QWidget):
         """
 
         input_error = QMessageBox()
+        input_error.setWindowIcon(QIcon(r'./logo.png'))
         input_error.setIcon(QMessageBox.Information)
         input_error.setText(f"A problem occurred on starting the search.")
         informative_text = f"Please make sure that the the following inputs are provided:\n\n"
@@ -217,6 +220,9 @@ class OutputWindow(QWidget):
         Initializer for the class that creates the GUI window
         """
         super().__init__(parent)
+        self.setWindowIcon(QIcon(r'./logo.png'))
+        self.setWindowTitle("BAP group H | Image Based Video Search Engine")
+        self.cutoffvalue = 113
         self.timeslots = []
         self.output_data = output_data
         self.videos = videos
@@ -226,10 +232,29 @@ class OutputWindow(QWidget):
         self.setGeometry(150, 150, 500, 600)
         self.layout.setContentsMargins(10, 10, 10, 10)
         self.tab = QTabWidget()
+
         self.returnBtn = QPushButton("New Search")
         self.returnBtn.clicked.connect(self.returnToMain)
+
+        self.slider = QSlider(QtCore.Qt.Horizontal)
+        self.slider.setMinimum(0)
+        self.slider.setMaximum(300)
+        self.slider.setValue(self.cutoffvalue)
+        self.slider.sliderReleased.connect(self.init_gui)
+
+        divider = QFrame()
+        divider.setFrameShape(QFrame.HLine)
+        divider.setFrameShadow(QFrame.Sunken)
+
+        self.sliderinfo = QLabel("Filter strength \n<= More accurate\t\t\tMore results =>")
+        self.sliderinfo.setAlignment(QtCore.Qt.AlignCenter)
         self.layout.addWidget(self.tab)
+        self.layout.addWidget(self.sliderinfo)
+        self.layout.addWidget(self.slider)
+        self.layout.addWidget(divider)
         self.layout.addWidget(self.returnBtn)
+
+
         self.setLayout(self.layout)
         self.setWindowTitle("BAP group H | Video search engine")
         self.videoplayer = gui_videplayer.VideoPlayer()
@@ -242,8 +267,10 @@ class OutputWindow(QWidget):
         Build the GUI
         :return: The GUI
         """
+        print(self.cutoffvalue)
+        self.cutoffvalue = self.slider.value()
+        print(self.cutoffvalue)
         self.fill_reports()
-        print(self.output_data)
 
     def fill_reports(self):
         tabs_to_add = len(self.videos)
@@ -254,11 +281,21 @@ class OutputWindow(QWidget):
             for idx, image in enumerate(self.images):
                 timestamps = []
                 tabtoadd.tb.append(f"<font size='+2'><b> Query Image: {os.path.split(image)[-1]}<br></font></b>")
-                for timestamp in self.output_data[i][idx][0]:
+                matches = False
+                for timestamp, dist in zip(self.output_data[i][idx][0], self.output_data[i][idx][1]):
+                    if dist > (self.cutoffvalue/100):
+                        break
+                    matches = True
                     timestamps.append(timestamp)
-                    tabtoadd.tb.append(f"      Occurence at:  {int(round(timestamp//3600))}:{int(round((timestamp%3600)//60))}:{int(round((timestamp%3600)%60))}")
-                tabtoadd.cb_image.addItem(os.path.split(image)[-1], timestamps)
-                tabtoadd.update_cb_timestamp(tabtoadd.cb_image.currentIndex())
+                    tabtoadd.tb.append(f"      Occurence at:  "
+                                       f"{str(int(round(timestamp//3600))).zfill(2)}:"
+                                       f"{str(int(round((timestamp%3600)//60))).zfill(2)}:"
+                                       f"{str(int(round((timestamp%3600)%60))).zfill(2)}")
+                if not matches:
+                    tabtoadd.tb.append(f"No occurences were found")
+                else:
+                    tabtoadd.cb_image.addItem(os.path.split(image)[-1], timestamps)
+                    tabtoadd.update_cb_timestamp(tabtoadd.cb_image.currentIndex())
 
 
     def create_tabs(self, obj, num, video, videoplayer):
@@ -288,6 +325,7 @@ class PageWidget(QWidget):
         self.cb_image = QComboBox()
         self.cb_timestamp = QComboBox()
         self.confirmbtn = QPushButton("Play")
+        self.confirmbtn.setEnabled(False)
         self.confirmbtn.clicked.connect(self.playvideo)
 
         self.sublayout.addWidget(self.cb_image)
@@ -303,6 +341,7 @@ class PageWidget(QWidget):
 
     def update_cb_timestamp(self, index):
         self.cb_timestamp.clear()
+        self.confirmbtn.setEnabled(True)
         timestamps = self.cb_image.itemData(index)
         for i in range(len(timestamps)):
             timestamps[i] = str(timestamps[i])
@@ -310,10 +349,7 @@ class PageWidget(QWidget):
             self.cb_timestamp.addItems(timestamps)
 
     def playvideo(self):
-        print(self.videoplayer)
-
         file, timestamp = os.path.abspath(self.video), float(self.cb_timestamp.currentText())*1000
-        print(file, timestamp)
         if not self.videoplayer.filepath:
             self.videoplayer.newVid(file, timestamp)
         elif self.videoplayer.filepath == file:

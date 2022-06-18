@@ -12,11 +12,14 @@ import time
 class VideoPlayer(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("PyQt5 Video Player")
+        self.setWindowIcon(QIcon(r'./logo.png'))
+        self.setWindowTitle("BAP group H | Image Based Video Search Engine")
         self.filepath = None
         self.timestamp = None
         self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
         videoWidget = QVideoWidget()
+        self.setGeometry(150, 150, 700, 400)
+
 
         self.playButton = QPushButton()
         self.playButton.setEnabled(False)
@@ -54,6 +57,7 @@ class VideoPlayer(QMainWindow):
         self.mediaPlayer.positionChanged.connect(self.positionChanged)
         self.mediaPlayer.durationChanged.connect(self.durationChanged)
         self.mediaPlayer.error.connect(self.handleError)
+
 
     def openFile(self):
         if self.filepath != '':
