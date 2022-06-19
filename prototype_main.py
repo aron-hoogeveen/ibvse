@@ -105,7 +105,7 @@ def main(use_args, input_videos: [str], input_images: [str]):
 
         frame_features = frame_features.numpy()
         frame_features = np.ascontiguousarray(frame_features, dtype=np.float32)
-        
+
         idx, dist, _ = nns(frame_features, query_features)
         nn_end_time = time.time()
         nn_time = nn_end_time - nn_start_time

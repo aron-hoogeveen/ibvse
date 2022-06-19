@@ -70,7 +70,7 @@ class Window(QWidget):
         self.layout.setContentsMargins(10, 10, 10, 10)
         self.init_gui()
         self.setLayout(self.layout)
-        self.setWindowTitle("BAP group H | Image Based Video Search Engine")
+        self.setWindowTitle("BAP group H | Image-Based Video Search Engine")
 
         self.videos = None  # List containing all the paths to the videos
         self.images = None  # List containing all the paths to the images
@@ -133,7 +133,7 @@ class Window(QWidget):
         # Opens multiple files, change to getOpenFileName if you want to force only 1 file
         # To add multiple file formats add them in between the brackets of Videos(*.mp4). Use space to separate them
         self.videos, _ = QFileDialog.getOpenFileNames(self, "Video Select", "",
-                                                      "Videos (*.*)", options=options)
+                                                      "Videos (*.mp4 *.mkv *.mov *.wmv)", options=options)
         self.load_vid_txt.clear()
         print(self.videos)
         # Add to textbox for feedback
@@ -152,7 +152,7 @@ class Window(QWidget):
         # Opens multiple files, change to getOpenFileName if you want to force only 1 file
         # To add multiple file formats add them in between the brackets of Images(*.png). Use space to separate them
         self.images, _ = QFileDialog.getOpenFileNames(self, "Image Select", "",
-                                                      "Images (*.*)", options=options)
+                                                      "Images (*.png *.jpg *.jpeg)", options=options)
         self.load_img_txt.clear()
         # Add to textbox for feedback
         for image in self.images:
@@ -204,7 +204,7 @@ class Window(QWidget):
         for missing_input in missing_inputs:
             informative_text += f"- {missing_input}\n"
         input_error.setInformativeText(informative_text)
-        input_error.setWindowTitle("Missing inputs")
+        input_error.setWindowTitle("BAP group H | Image-Based Video Search Engine")
         input_error.setStandardButtons(QMessageBox.Close)
         input_error.exec_()
 
@@ -221,7 +221,7 @@ class OutputWindow(QWidget):
         """
         super().__init__(parent)
         self.setWindowIcon(QIcon(r'./logo.png'))
-        self.setWindowTitle("BAP group H | Image Based Video Search Engine")
+        self.setWindowTitle("BAP group H | Image-Based Video Search Engine")
         self.cutoffvalue = 113
         self.timeslots = []
         self.output_data = output_data
@@ -256,7 +256,6 @@ class OutputWindow(QWidget):
 
 
         self.setLayout(self.layout)
-        self.setWindowTitle("BAP group H | Video search engine")
         self.videoplayer = gui_videplayer.VideoPlayer()
         print(self.videos)
         self.init_gui()
@@ -277,10 +276,10 @@ class OutputWindow(QWidget):
         if self.tab.count() != 0:
             self.tab.clear()
         for i in range(tabs_to_add):
-            tabtoadd = self.create_tabs(self.tab, i, self.videos[i], self.videoplayer)
+            tabtoadd = self.create_tabs(self.tab, i, self.videos[i], self.images, self.videoplayer)
             for idx, image in enumerate(self.images):
                 timestamps = []
-                tabtoadd.tb.append(f"<font size='+2'><b> Query Image: {os.path.split(image)[-1]}<br></font></b>")
+                tabtoadd.tb.append(f"<font size='+2'><b>Input image: {os.path.split(image)[-1]}<br></font></b>")
                 matches = False
                 for timestamp, dist in zip(self.output_data[i][idx][0], self.output_data[i][idx][1]):
                     if dist > (self.cutoffvalue/100):
@@ -292,14 +291,16 @@ class OutputWindow(QWidget):
                                        f"{str(int(round((timestamp%3600)//60))).zfill(2)}:"
                                        f"{str(int(round((timestamp%3600)%60))).zfill(2)}")
                 if not matches:
-                    tabtoadd.tb.append(f"No occurences were found")
+                    tabtoadd.tb.append(f"      No occurences were found\n")
                 else:
                     tabtoadd.cb_image.addItem(os.path.split(image)[-1], timestamps)
                     tabtoadd.update_cb_timestamp(tabtoadd.cb_image.currentIndex())
+                tabtoadd.tb.append("\n")
 
 
-    def create_tabs(self, obj, num, video, videoplayer):
-        tabtoadd = PageWidget(num, video, videoplayer)
+
+    def create_tabs(self, obj, num, video, images, videoplayer):
+        tabtoadd = PageWidget(num, video, images, videoplayer)
         obj.addTab(tabtoadd, os.path.split(self.videos[num])[-1])
         return tabtoadd
 
@@ -310,12 +311,14 @@ class OutputWindow(QWidget):
 
 
 
+
 class PageWidget(QWidget):
-    def __init__(self, num, video, videoplayer, parent=None):
+    def __init__(self, num, video, images, videoplayer, parent=None):
         super().__init__(parent)
 
         self.videoplayer = videoplayer
         self.video = video
+        self.images = images
         self.tb = QTextBrowser(self)
         self.tb.setFrameShape(QFrame.Box)
         self.tb.setGeometry(QtCore.QRect(10, 10, 400, 500))
@@ -350,12 +353,27 @@ class PageWidget(QWidget):
 
     def playvideo(self):
         file, timestamp = os.path.abspath(self.video), float(self.cb_timestamp.currentText())*1000
+        image_path = None
+        for image in self.images:
+            image_name = os.path.split(image)[-1]
+            if image_name == self.cb_image.currentText():
+                image_path = image
+                break
+        print(image_path)
+        assert image_path is not None
+        # path is wrong, compare only the last part (aka the video name)
         if not self.videoplayer.filepath:
             self.videoplayer.newVid(file, timestamp)
         elif self.videoplayer.filepath == file:
             self.videoplayer.newTimestamp(timestamp)
         else:
             self.videoplayer.newVid(file, timestamp)
+
+        if not self.videoplayer.image:
+            self.videoplayer.new_image(image_path)
+        elif image_path != self.videoplayer.image:
+            self.videoplayer.new_image(image_path)
+
 
 
 
