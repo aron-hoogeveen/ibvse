@@ -135,6 +135,7 @@ class Window(QWidget):
         self.videos, _ = QFileDialog.getOpenFileNames(self, "Video Select", "",
                                                       "Videos (*.*)", options=options)
         self.load_vid_txt.clear()
+        print(self.videos)
         # Add to textbox for feedback
         for video in self.videos:
             video = os.path.split(video)[-1]
@@ -174,7 +175,6 @@ class Window(QWidget):
         else:
             print("==== Started Search =====")
             # Call the function that starts the search engine
-            results = []  # index, dist
             self.setEnabled(False)
             self.repaint()
             self.start_button.setText("Performing search...")
@@ -183,8 +183,8 @@ class Window(QWidget):
             self.load_img_btn.repaint()
             self.load_vid_btn.repaint()
             # self.hide()
-            for i,video in enumerate(self.videos):
-                results.append(prototype_main.main(False, video, self.images))
+
+            results = prototype_main.main(False, self.videos, self.images)
             self.output_window = OutputWindow(results, self.videos, self.images, self)
             self.output_window.show()
             self.hide()
