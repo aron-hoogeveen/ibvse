@@ -42,7 +42,6 @@ def main(use_args, input_videos: [str], input_images: [str]):
     """
     The Image Based Video Search Engine main body according to the pipeline of:
     Keyframe Extraction => Feature Extraction => Nearest Neighbour Search
-    :param use_args: Should parser arguments be used
     :param input_videos: A list of the paths to the input videos
     :param input_images: A list of the paths to the input images
     :return: The timestamp and distance per video and per query image. The structure is a list that contains a list per
@@ -58,7 +57,6 @@ def main(use_args, input_videos: [str], input_images: [str]):
         input_images = args.input_images
 
     start_time = time.time()  # to be sure we also save the ultimate start time
-    print(input_images)
     # check if all input images exist
     for i_i, input_image in enumerate(input_images):
         input_image = os.path.expanduser(input_image)
@@ -82,11 +80,13 @@ def main(use_args, input_videos: [str], input_images: [str]):
         query_images.append(img)
 
 
+    fe_queries_start_time = time.time()
     res = []
     size = 576  # as determined by our timing/performance measurements
     query_features = extract_features_global(query_images, size)
     query_features = query_features.numpy()
     query_features = np.ascontiguousarray(query_features, dtype=np.float32)
+    fe_queries_end_time = time.time()
 
     for input_video in input_videos:
         kfe_start_time = time.time()
@@ -94,10 +94,9 @@ def main(use_args, input_videos: [str], input_images: [str]):
         indices = np.array(indices)
         kfe_end_time = time.time()
 
-        fe_start_time = time.time()
+        fe_frames_start_time = time.time()
         frame_features = extract_features_global(keyframes_data, size)
-        fe_time_end = time.time()
-        fe_time = fe_time_end - fe_start_time
+        fe_feams_time_end = time.time()
 
         print('>>> Performing Nearest Neighbour Search')
         nn_start_time = time.time()
@@ -108,7 +107,7 @@ def main(use_args, input_videos: [str], input_images: [str]):
 
         idx, dist, _ = nns(frame_features, query_features)
         nn_end_time = time.time()
-        nn_time = nn_end_time - nn_start_time
+
         print('>>> Done performing Nearest Neighbour Search')
 
         # frame_idx = indices[idx[0]]  # The frames in which the object is most likely present
@@ -122,6 +121,11 @@ def main(use_args, input_videos: [str], input_images: [str]):
 
         # timestamps = frame_idx/fps
         end_time = time.time()
+        fe_queries_time = fe_queries_end_time - fe_queries_start_time
+        fe_frames_time = fe_feams_time_end - fe_frames_start_time
+        nn_time = nn_end_time - nn_start_time
+        kfe_time = kfe_end_time - kfe_start_time
+        total_fe_time = fe_queries_time + fe_frames_time
         total_time = end_time - start_time
 
         print('-' * 80)
@@ -133,11 +137,11 @@ def main(use_args, input_videos: [str], input_images: [str]):
         print('')
         # print(f'The linear calculated distances are: {lin_dist}')
 
-        kfe_time = kfe_end_time - kfe_start_time
+
         print()
         print('Timings:')
         print(f'\tKFE: {kfe_time}')
-        print(f'\tFE : {fe_time}')
+        print(f'\tFE : {total_fe_time}')
         print(f'\tNN : {nn_time}')
 
         # save_keyframes(indices, keyframes_data)  # save the individual frames to disk for manual checking
