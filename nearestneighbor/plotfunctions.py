@@ -3,22 +3,20 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import os
 import numpy as np
-import time
 import joblib
 
 from main import method_selector
 
 
-# methods = ['linear', 'faiss_flat_cpu', 'faiss_flat_gpu', 'faiss_hnsw', 'faiss_ivf_cpu', 'faiss_pq', 'faiss_lsh']
-# linestyles = ['black','red','green','blue','cyan','magenta','darkorange']
-
 def main():
-    # plot_data_timevsk_diff_frames()
-    # plot_data_annoyforest()
-    # plot_data_hnsw_m()
-    # plot_data_batch_size()
+    """
+    main body to call plotting functions, uncomment when neccesary
+    :return:
+    """
     # plot_methods_total_time()
-
+    #
+    # plot_data_timevsk_diff_frames()
+    #
     # store_hpo_lsh_data(r'.\test_data\hpo_results\faiss_lsh270.pkl', 270)
     # store_hpo_lsh_data(r'.\test_data\hpo_results\faiss_lsh8100.pkl', 8100)
     # store_hpo_lsh_data(r'.\test_data\hpo_results\faiss_lsh50000.pkl', 50000)
@@ -27,15 +25,22 @@ def main():
     # store_hpo_ivf_data(r'.\test_data\hpo_results\faiss_ivf8100.pkl')
     #
     # store_hpo_hnsw_data(r'.\test_data\hpo_results\faiss_hnsw270.pkl')
-    # get_final_intersection_points()
+
+    get_final_intersection_points()
+
     # plot_methods_total_time_final()
-    break_points_15min()
-    # something()
+    # break_points_15min()
+    # plot_selector()
+    #
+    # check_recall_precision_stored_data()
     # validation_random()
-    plot_selector()
 
 
 def plot_data_timevsk_diff_frames():
+    """
+    Plot k_percentage against time,recall and precision for 3 different amounts of frames.
+    :return: 3 plots containing the results
+    """
     filename270 = r'test_data/timevsk270.csv'
     filename8100 = r'test_data/timevsk8100.csv'
     filename50000 = r'test_data/timevsk50000.csv'
@@ -121,144 +126,11 @@ def plot_data_timevsk_diff_frames():
     plt.show()
 
 
-def plot_data_timevsk():
-    filename = r'test_data/timevsk.csv'
-    df = pd.read_csv(os.path.abspath(filename))
-    df_annoy = df.query('method == "annoy"')
-    df_hnsw = df.query('method == "hnsw"')
-    df_linear = df.query('method == "linear"')
-    k_percentage = np.linspace(0.1, 25, 50)
-
-    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(12, 6))
-    fig.suptitle("K-nearest neighbors for 100 queries, based on number of frames")
-    ax1.plot(k_percentage, df_annoy['searchtime'])
-    ax1.plot(k_percentage, df_hnsw['searchtime'])
-    ax1.plot(k_percentage, df_linear['searchtime'])
-    ax1.title.set_text("search time")
-    ax1.set(xlabel="K (%)", ylabel="Search time (s)")
-    ax1.set_xlim([0, 25])
-    ax1.grid(True)
-
-    ax2.plot(k_percentage, df_annoy['mAP'])
-    ax2.plot(k_percentage, df_hnsw['mAP'])
-    ax2.plot(k_percentage, df_linear['mAP'])
-    ax2.title.set_text("mAP")
-    ax2.set(xlabel="K (%)", ylabel="mAP")
-
-    ax2.set_xlim([0, 25])
-    ax2.grid(True)
-
-    ax3.plot(k_percentage, df_annoy['recall'])
-    ax3.plot(k_percentage, df_hnsw['recall'])
-    ax3.plot(k_percentage, df_linear['recall'])
-    ax3.title.set_text("recall")
-    ax3.set(xlabel="K (%)", ylabel="recall")
-
-    ax3.set_xlim([0, 25])
-    ax3.grid(True)
-
-    fig.legend(["ANNOY", "HNSW", "Linear"], loc="center right", title="Method", borderaxespad=0.1)
-
-    plt.savefig("test_data/plots/timevskfinal.png")
-    plt.show()
-
-
-def plot_data_annoyforest():
-    filename = r'test_data/annoy_forest_size.csv'
-    df = pd.read_csv(os.path.abspath(filename))
-    df_forests = []
-    n_frames = np.round(np.linspace(1, 50000, 10))
-
-    for n in n_frames:
-        df_forests.append(df.query(f"n_frames=={n}"))
-
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 6))
-    for df_forest in df_forests:
-        fig.suptitle("ANNOY: Determination of optimal forest size for  100 queries, based on k = 7.5%")
-        ax1.plot(df_forest['forest_size'], (df_forest['build_time'] + df_forest['search_time']))
-        ax1.title.set_text("Build time")
-        ax1.set(xlabel="Forest size", ylabel="Build time (s)")
-        ax1.grid(True)
-
-        ax2.plot(df_forest['forest_size'], df_forest['mAP'])
-        ax2.title.set_text("mAP")
-        ax2.set(xlabel="Forest size", ylabel="mAP")
-        ax2.grid(True)
-
-    fig.legend([f"{n_frames[0]}", f"{n_frames[1]}", f"{n_frames[2]}",
-                f"{n_frames[3]}", f"{n_frames[4]}", f"{n_frames[5]}",
-                f"{n_frames[6]}", f"{n_frames[7]}", f"{n_frames[8]}",
-                f"{n_frames[9]}"], loc="center right", title="number of frames", borderaxespad=0.1)
-
-    plt.subplots_adjust(right=0.83)
-    plt.savefig("test_data/plots/annoyforestsize.png")
-    plt.show()
-
-
-def plot_data_hnsw_m():
-    filename = r'test_data/hnsw_m.csv'
-    df = pd.read_csv(os.path.abspath(filename))
-    m_trials = range(4, 15, 2)  # 10 runs
-    df_mtrials = []
-    n_frames = np.round(np.linspace(1, 50000, 10))
-
-    for n in n_frames:
-        df_mtrials.append(df.query(f"n_frames=={n}"))
-
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 6))
-    for df_m in df_mtrials:
-        fig.suptitle("HNSW: Determination of optimal M for 100 queries, based on k = 7.5%")
-        ax1.plot(m_trials, (df_m['build_time'] + df_m['search_time']))
-        ax1.title.set_text("Build time")
-        ax1.set(xlabel="M", ylabel="Build time (s)")
-        ax1.grid(True)
-
-        ax2.plot(m_trials, df_m['mAP'])
-        ax2.title.set_text("mAP")
-        ax2.set(xlabel="M", ylabel="mAP")
-        ax2.grid(True)
-
-    fig.legend([f"{n_frames[0]}", f"{n_frames[1]}", f"{n_frames[2]}",
-                f"{n_frames[3]}", f"{n_frames[4]}", f"{n_frames[5]}",
-                f"{n_frames[6]}", f"{n_frames[7]}", f"{n_frames[8]}",
-                f"{n_frames[9]}"], loc="center right", title="number of frames", borderaxespad=0.1)
-
-    plt.subplots_adjust(right=0.83)
-
-    plt.savefig("test_data/plots/hnsw_m.png")
-    plt.show()
-
-
-def plot_data_batch_size():
-    filename = r'test_data/hnsw_batch_size.csv'
-    df = pd.read_csv(os.path.abspath(filename))
-    df_batches = []
-    n_frames = np.linspace(500, 50000, 10)
-
-    for n in n_frames:
-        df_batches.append(df.query(f"n_frames=={round(n)}"))
-
-    fig, ax1 = plt.subplots((1), figsize=(7, 6))
-    for df_batch in df_batches:
-        fig.suptitle("HNSW: Determination of optimal batch size for 100 queries, based on k = 7.5%")
-        ax1.plot(df_batch['batch_size'], df_batch['build_time'])
-        ax1.title.set_text("Build time")
-        ax1.set(xlabel="Batch size (%)", ylabel="Build time (s)")
-        ax1.grid(True)
-        ax1.set_xlim([1, 60])
-
-    fig.legend([f"{n_frames[0]}", f"{n_frames[1]}", f"{n_frames[2]}",
-                f"{n_frames[3]}", f"{n_frames[4]}", f"{n_frames[5]}",
-                f"{n_frames[6]}", f"{n_frames[7]}", f"{n_frames[8]}",
-                f"{n_frames[9]}"], loc="center right", title="number of frames", borderaxespad=0.1)
-
-    plt.subplots_adjust(right=0.75)
-
-    plt.savefig("test_data/plots/hnsw_batch_size.png")
-    plt.show()
-
-
 def plot_methods_total_time():
+    """
+    Plot for the methods the time per query for 3 different amounts of frames
+    :return: 3 plots with the time times needed for each method
+    """
     methods = ['L2', 'ANNOY', 'HNSW', 'HNSW batch', 'FAISS flat L2 CPU', 'FAISS flat L2 GPU',
                'FAISS HNSW', 'FAISS IVF CPU', 'FAISS IVF GPU', "FAISS PQ", "FAISS LSH"]
     max_queries = 1000
@@ -327,6 +199,10 @@ def plot_methods_total_time():
 
 
 def plot_methods_total_time_final():
+    """
+    Plot for the selected and optimized methods the time per query for 3 different amounts of frames
+    :return: 3 plots with the time times needed for each method
+    """
     methods = ['L2', 'FAISS flat L2 CPU', 'FAISS flat L2 GPU',
                'FAISS HNSW', 'FAISS IVF CPU', "FAISS LSH"]
     max_queries = 1000
@@ -424,8 +300,8 @@ def store_hpo_lsh_data(filepath, number):
     query_range = [1, n_queries]
 
     # Load the study and create a dataframe
-    object = joblib.load(filepath)
-    df = object.trials_dataframe(attrs=('number', 'value', 'params', 'state'))
+    object_study = joblib.load(filepath)
+    df = object_study.trials_dataframe(attrs=('number', 'value', 'params', 'state'))
 
     # Create a latex and png file name
     latexfile = filepath.split("\\")[-1].split(".")[0] + '.tex'
@@ -472,8 +348,8 @@ def store_hpo_ivf_data(filepath):
     n_queries = 1000
 
     # Load the study and create a dataframe
-    object = joblib.load(filepath)
-    df = object.trials_dataframe(attrs=('number', 'value', 'params', 'state'))
+    object_study = joblib.load(filepath)
+    df = object_study.trials_dataframe(attrs=('number', 'value', 'params', 'state'))
     # Create a latex file name and store the study data as a latex table
     latexfile = filepath.split("\\")[-1].split(".")[0] + '.tex'
     with open(rf'.\test_data\latex\{latexfile}', 'w') as savefile:
@@ -502,8 +378,8 @@ def store_hpo_hnsw_data(filepath):
     """
     n_queries = 1000
     # Load the study and create a dataframe
-    object = joblib.load(filepath)
-    df = object.trials_dataframe(attrs=('number', 'value', 'params', 'state'))
+    object_study = joblib.load(filepath)
+    df = object_study.trials_dataframe(attrs=('number', 'value', 'params', 'state'))
     # Create a latex file name and store the study data as a latex table
     latexfile = filepath.split("\\")[-1].split(".")[0] + '.tex'
     with open(rf'.\test_data\latex\{latexfile}', 'w') as savefile:
@@ -556,11 +432,13 @@ def calc_breakpoints(build_times, search_times, n_queries, n_entries):
 
 
 def get_final_intersection_points():
+    """
+    Get the intersection points of the final used methods
+    :return: the intersection points and which method is used
+    """
     methods = ['L2', 'FAISS flat L2 CPU', 'FAISS flat L2 GPU',
                'FAISS HNSW', "FAISS LSH", 'FAISS IVF CPU', ]
     methods = np.array(methods)
-    max_queries = 1000
-    n_queries = [1, max_queries]
 
     # Manually retrieved data for n_frames 270
     search_times_270 = np.array([0.75, 0.16, 0.0, 0.0, 0.01])
@@ -615,7 +493,7 @@ def break_points_15min():
     data = np.array([np.arange(270, 4050, 270)])
     data = np.append(data, np.array([np.arange(4050, 50000, 4050)]))
     data = np.append(data, 50000)
-    all = []
+    all_data = []
     # Make selections of data based on the amount of frames
     for i in data:
         print(f"n_frames = {i}/50000")
@@ -625,24 +503,19 @@ def break_points_15min():
 
         method_array, breaks = calc_breakpoints(build_time, search_time, 1000, 5)
         method_array[0] = method_array[1]
-        all.append(method_array)
-        # total_time1 = search_time
-        # total_time1000 = search_time*1000
-        # for i,j in zip(total_time1,total_time1000):
-        #     plt.plot([i,j])
-        # plt.legend(["l","Flat cpu", "flat gpu","hnsw","lsh"])
-        # plt.show()
+        all_data.append(method_array)
 
     # Make one big list of all the data and save it
-    all = np.concatenate(all).ravel()
-    # for i in range(len(all)):
-    #     if all[i] > 1:
-    #         all[i] +=1
+    all_data = np.concatenate(all_data).ravel()
     filename = r".\test_data\interp_data.npy"
-    np.save(filename, np.array(all))
+    np.save(filename, np.array(all_data))
 
 
-def something():
+def check_recall_precision_stored_data():
+    """
+    check recall and precision of data stored of manual runs
+    :return:
+    """
     df = pd.read_csv(r".\test_data\15minresults.csv")
     selection = df[df.iloc[:, 4] <= 0.65]
     selection2 = df[df.iloc[:, 5] < 0.5]
@@ -651,6 +524,10 @@ def something():
 
 
 def validation_random():
+    """
+    check if the selected method of manual runs was correct
+    :return:
+    """
     df = pd.read_csv(r".\test_data\15minresults6.csv")
     df.info()
     indices = []
@@ -664,6 +541,10 @@ def validation_random():
 
 
 def plot_selector():
+    """
+    Make a visualization of the selector
+    :return: a plot that visualizes the selector
+    """
     methods = ["linear", "faiss_flat_cpu", "faiss_flat_gpu", "faiss_hnsw", "faiss_lsh", "faiss_ivf"]
     steps = 100
     total = []
@@ -674,14 +555,12 @@ def plot_selector():
             print(f"{i, j}:/50000,1000")
         total.append(data)
 
-    # total = np.array(total).flatten()
-    X, Y = np.meshgrid(range(1, 1002, int(1000 / steps)), range(1, 50002, int(50000 / steps)))
+    x, y = np.meshgrid(range(1, 1002, int(1000 / steps)), range(1, 50002, int(50000 / steps)))
 
     cmap = mpl.cm.Set1
     norm = mpl.colors.BoundaryNorm([-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5], cmap.N)
 
-    plt.pcolormesh(X, Y, total, cmap=cmap, clim=(0, 6))
-    # plt.scatter(X, Y, total)
+    plt.pcolormesh(x, y, total, cmap=cmap, clim=(0, 6))
     cbar = plt.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), ticks=[0, 1, 2, 3, 4, 5])
     cbar.set_ticklabels(methods)
     plt.title("Interpolation of method selector")
