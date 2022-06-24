@@ -1,23 +1,9 @@
-#!/usr/bin/env python
-'''
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Demo for the evaluation of video summaries
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% This script takes a random video, selects a random summary
-% Then, it evaluates the summary and plots the performance compared to the human summaries
-%
-%%%%%%%%
-% publication: Gygli et al. - Creating Summaries from User Videos, ECCV 2014
-% author:      Michael Gygli, PhD student, ETH Zurich,
-% mail:        gygli@vision.ee.ethz.ch
-% date:        05-16-2014
-'''
-import os 
+import os
 from summe import *
 import numpy as np
 import random
 from main import *
+
 ''' PATHS ''' 
 HOMEDATA='C:\\Users\\Robert\\bin\\SumMe\\GT'
 HOMEVIDEOS='C:\\Users\\Robert\\bin\\SumMe\\videos'
@@ -31,7 +17,8 @@ if __name__ == "__main__":
     print(videoName)
     videoName = 'Playing_on_water_slide.webm'
     videoName=videoName.split('.')[0] # take only the name of the video without extension
-    
+    video_path = HOMEVIDEOS + str("\\") + videoName + ".mp4"
+
     #In this example we need to do this to now how long the summary selection needs to be
     gt_file=HOMEDATA+'/'+videoName+'.mat'
     gt_data = scipy.io.loadmat(gt_file)
@@ -53,10 +40,13 @@ if __name__ == "__main__":
     sumsels = {}
     f_measures = np.zeros([nFrames[0][0],1])
     summary_lengths = np.zeros([nFrames[0][0],1])
-    for i in range(0, 19):
-        sumsels[i] = random_summary(80+i, nFrames[0][0])
+    for i in range(0, 6):
+        keyframes_data, keyframe_indices, video_fps = KE_uniform_sampling(video_path, 0.1+i, 0.85)
+        frame_count = nFrames[0][0]
+        sumsels[i] = changeIdxFormat(keyframe_indices, frame_count)
+        #sumsels[i] = random_summary(80+i, nFrames[0][0])
         [f_measures[i], summary_lengths[i]] = evaluateSummary(sumsels[i], videoName, HOMEDATA)
 
     '''plotting'''
-    methodNames={'Random'};
-    plotAllResults(sumsels,methodNames, f_measures, summary_lengths, videoName,HOMEDATA);
+    methodNames={'Sampling'};
+    plotAllResults(sumsels,methodNames, f_measures, summary_lengths, videoName,HOMEDATA)
