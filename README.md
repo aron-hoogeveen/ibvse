@@ -10,7 +10,7 @@ conda env create
 ```
 Next, download the solar global model that can be found [here](https://imperialcollegelondon.box.com/shared/static/fznpeayct6btel2og2wjjgvqw0ziqnk4.pth). Move the downloaded model to the following folder: 
 ```
-../ivbse/featureextraction/solar/data/networks/
+../ibvse/featureextraction/solar/data/networks/
 ``` 
 
 Finally, if you want to make use of the videoplayer in the GUI, make sure you have the correct codecs installed. For Windows users, the K-Lite Codec Pack Basic can be downloaded [here](https://codecguide.com/download_k-lite_codec_pack_basic.htm) and provides the codecs for all common audio and video formats. The  
