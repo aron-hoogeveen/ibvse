@@ -40,5 +40,11 @@ The Feature Extraction module uses the SOLAR global model to extract the feature
 The code for the Feature Extraction  module can be found in the folder featurextraction
 
 ## Data Compression and Nearest Neighbour Search
-The Data Compression and Nearest Neighbour Search module finds the closest matches between the feature vectors of the keyframes and query images. Multiple methods are implemented and a selector selects the most optimal method (of the implemented methods) based on the amount of keyframes and query images. <br /> 
+The Data Compression and Nearest Neighbour Search module finds the closest matches between the feature vectors of the keyframes and query images. Multiple methods are implemented and a selector selects the most optimal method (of the implemented methods) based on the amount of keyframes and query images. To test the module as a standalone, extract the feautures of a dataset (the one used for this project was [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html)) using any model (the one used for this project was resnet-18). The extracted feautres should be saved to numpy files with the following names: 
+```
+frames.npy          # The training data (majority of the dataset)
+frame_labels.npy    # The labels of the training data (majority of the dataset)
+images.npy          # The test data (minority of the dataset)
+image_labels.npy    # The labels of the test data (minority of the dataset)
+```
 The code for the Data Compression and Nearest Neighbour Search module can be found in the folder nearestneighbor
