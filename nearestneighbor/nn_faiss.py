@@ -1,3 +1,7 @@
+"""
+Image based video search engine: prototype
+This file contains several implementation for NNS of the FAISS package
+"""
 import faiss
 import time
 import numpy as np

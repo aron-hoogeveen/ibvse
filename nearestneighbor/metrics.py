@@ -1,3 +1,7 @@
+"""
+Image based video search engine: prototype
+This file contains functions to determine the amount of NN to be found and evaluation of the selector
+"""
 import os
 import pandas as pd
 import numpy as np

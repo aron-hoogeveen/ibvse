@@ -1,3 +1,7 @@
+"""
+Image based video search engine: prototype
+This file contains the functions that were used to create evaluation plots and evaluate the HPO data
+"""
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl

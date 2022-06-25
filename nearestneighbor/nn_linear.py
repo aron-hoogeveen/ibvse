@@ -1,3 +1,7 @@
+"""
+Image based video search engine: prototype
+This file contains the linear python implementation for NNS
+"""
 import time
 import numpy as np
 
