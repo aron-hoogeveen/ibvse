@@ -9,7 +9,7 @@ sys.path.append(os.path.dirname(os.path.abspath('./solar/solar_global')))
 from fe_main import extract_features_global
 
 
-def plot_data(data, n):
+def plot_data(data):
     cm = 1/2.54  # convert inches to centimeters
     fig, ax = plt.subplots(figsize=(18*cm, 18*cm))
     ax.plot(data['h'], data['time'])
@@ -22,7 +22,6 @@ def plot_data(data, n):
     ax.set_yticks(list(round(x, 2) for x in data['time']))
     plt.xlim([min(data['h']), max(data['h'])])
     plt.ylim([min(data['time']), max(data['time'])])
-    # TODO W x H xticklabels
     plt.grid()
 
     plt.show()
@@ -35,8 +34,7 @@ def main():
     """
     n = 50  # the more iterations the better, because then the loading time for the network disappears
     size = ((123, 33), (256, 144), (320, 180), (426, 240), (640, 360), (848, 480), (960, 540), (1024, 576),
-            (1280, 720))
-    # size = ((123, 33), (256, 144), (320, 180))
+            (1280, 720))  # we add one bogus iteration at the start to eliminate the initial long loading time
 
     data = {
         'w': [],
@@ -57,7 +55,7 @@ def main():
         data['h'].append(s[1])
         data['time'].append((end_time - start_time)/n)
 
-    data['w'].pop(0)
+    data['w'].pop(0)  # remove the bogus iteration
     data['h'].pop(0)
     data['time'].pop(0)
     plot_data(data, n)
