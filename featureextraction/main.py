@@ -36,7 +36,7 @@ def test_inputs_outputs():
     frame_images = np.array(frame_images)
 
     # feed the images to the feature extraction
-    size = 720
+    size = 576
     search_features = extract_features_global(search_images, size)
     frame_features = extract_features_global(frame_images, size)
 

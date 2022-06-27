@@ -46,7 +46,7 @@ def main():
             # Loop over each of the search images
             # Create csv file per search image
             #
-            df_labels_txt = pd.read_csv(full_path + '/labels2img.csv', index_col=0)  # TODO move fixed filenames to file with constants
+            df_labels_txt = pd.read_csv(full_path + '/labels2img.csv', index_col=0)
             df_labels = df_labels_txt.copy()
 
             for i in range(len(df_labels_txt)):
