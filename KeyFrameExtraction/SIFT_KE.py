@@ -5,7 +5,6 @@ from collections import namedtuple
 ColorMoments = namedtuple('ColorMoments', ['mean', 'stdDeviation', 'skewness'])
 
 def getColorMoments(histogram, totalPixels):
-
     # Computing the color moments
     sum = 0
     for i in range(len(histogram)):

@@ -1,9 +1,13 @@
-# k means clustering to generate video summary
 import numpy as np
 from sklearn.cluster import KMeans
 
 def VSUMM(descriptors, shot_frame_number):
-
+	"""
+	K-means clustering to generate video summary
+	:param descriptors: VSUMM descriptors
+	:param shot_frame_number: start index of shot
+	:return: frame indices
+	"""
 	# Percentage of keyframes taken
 	percent = int(2)
 

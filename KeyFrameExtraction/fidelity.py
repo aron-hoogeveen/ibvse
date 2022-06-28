@@ -1,19 +1,15 @@
-# fidelity measure based on semiHausdorff distance
-import numpy as np
-import cv2
-import scipy
-import os
-import glob
-import random
 from main import *
 from scipy.spatial import distance
 from math import atan2
 
 def fidelity_descriptors(path):
+    """
+    Generates histogram descriptors to compute fidelity with
+    :param path: video path
+    :return: fd_data, hist_data, fdnorm, histnorm (histogram descriptors along with norms to normalize)
+    """
     cap = cv2.VideoCapture(path)
-    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    video_fps = cap.get(cv2.CAP_PROP_FPS)
-    width  = cap.get(cv2.CAP_PROP_FRAME_WIDTH)   # float `width`
+    width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)   # float `width`
     height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
     histnorm = width * height  # to normalize color histogram with
     downscale = 0.5  # downsize frame for lower computation for hogs
@@ -27,39 +23,30 @@ def fidelity_descriptors(path):
         if not success:
             break
         # print("Creating histograms for frame " + str(cnt))
-        # fd, hog_image = hog(frame, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1), visualize=True,channel_axis=-1)
         fd = calculateHOG(frame, downscale)
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         hist = cv2.calcHist([frame], [0, 1, 2], None, [64, 64, 64], [0, 256, 0, 256, 0, 256])
-        # hist = cv2.normalize(hist, None).flatten()
         hist_data.append(hist)
         fd_data.append(fd)
         cnt += 1
         if cnt % 50 == 0:
             print("created hog for frame: " + str(cnt))
-        # if cnt > 10:
-        #     break
     print("end of histogram creation")
     return fd_data, hist_data, fdnorm, histnorm
 
 def fidelity(kf_indices, path, vseq_hists, vseq_hogs, fdnorm, histnorm):
     """
     Computes fidelity for a chosen selection of keyframes
+    :param kf_indices: indices of keyframes
+    :param path: path of video (won't be used here anymore)
+    :param vseq_hists: (color) histograms of all frames in video
+    :param vseq_hogs: (edge) histograms of all frames in video
+    :param fdnorm: norm of edge direction histogram
+    :param histnorm: norm of color histogram (amount of pixels)
+    :return: Fidelity value (within [0, 1])
     """
-    # cap = cv2.VideoCapture(os.path.abspath(os.path.expanduser(sys.argv[1])))
-    # frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    # video_fps = cap.get(cv2.CAP_PROP_FPS)
-    # width  = cap.get(cv2.CAP_PROP_FRAME_WIDTH)   # float `width`
-    # height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-    # histnorm = width*height # to normalize color histogram with
-    # downscale = 0.1 # downsize frame for lower computation for hogs
-    # fdnorm = histnorm*(downscale)**2 # to normalize edge detection histogram
 
-    #decode keyframe indices from video into array
-    #keyframes = keyframes_indices_to_array(kf_indices, path, video_fps, frame_count)
-
-    #calculate histograms
-    #[keyframes_hogs, vseq_hogs, keyframes_hists, vseq_hists] = calculateHists(keyframes, path, video_fps, cap, downscale)
+    # Semi Hausdorff distance
     maxdiff = 1 # maximum value difference() can return
     maxdist = 0
     for i in range(0, len(vseq_hists)):
@@ -73,28 +60,13 @@ def fidelity(kf_indices, path, vseq_hists, vseq_hogs, fdnorm, histnorm):
 
     return maxdiff - maxdist
 
-# def distance_inner(selection, nf, path,  hist_sel, hist_data, maxdiff, fd_sel, fd_data):
-#     difference_list = {}
-#     for i in range(0, len(hist_sel)):
-#         difference_list[i] = difference(hist_sel[i], hist_d, fd_sel[i], fd_d)
-#     #print(difference_list)
-#     #maxdiff = check_maxdifference(difference_list,maxdiff)
-#     distance  = minimalvalue(difference_list)
-#     return distance
-#
-# # def check_maxdifference(array, maxdiff):
-# #     for i in range(1, len(array)):
-# #         if array[i] > maxdiff:
-# #             maxdiff = array[i]
-# #     return maxdiff
-#
-# def minimalvalue(array):
-#     min = array[0]
-#     for i in range(1, len(array)):
-#         if array[i] < min:
-#             min = array[i]
-#     return min
 def calculateHOG(frame, downsize):
+    """
+    OBSOLETE: descriptors are generated directly
+    :param frame:
+    :param downsize:
+    :return:
+    """
     #resize image for computational speed gain
     scale_percent = downsize  # percent of original size
     width = int(frame.shape[1] * scale_percent)
@@ -132,21 +104,25 @@ def calculateHOG(frame, downsize):
     return histogram
 
 def calculateHists(keyframes, path, video_fps, cap, downscale):
+    """
+    OBSOLETE
+    :param keyframes:
+    :param path:
+    :param video_fps:
+    :param cap:
+    :param downscale:
+    :return:
+    """
     #parameters
-
-
 
     fd_sel = []
     hist_sel = []
     print("Creating hogs")
     for frame in keyframes:
         #print("Creating hog for frame")
-        #fd, hog_image = hog(frame, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1), visualize=True,channel_axis=-1)
         fd = calculateHOG(frame, downscale)
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        # fd = hog.compute(image)
         hist = cv2.calcHist([frame], [0, 1, 2], None, [64, 64, 64], [0, 256, 0, 256, 0, 256])
-        #hist = cv2.normalize(hist, None).flatten()
         hist_sel.append(hist)
         fd_sel.append(fd)
 
@@ -158,11 +134,9 @@ def calculateHists(keyframes, path, video_fps, cap, downscale):
         if not success:
             break
         #print("Creating histograms for frame " + str(cnt))
-        #fd, hog_image = hog(frame, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1), visualize=True,channel_axis=-1)
         fd = calculateHOG(frame, downscale)
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         hist = cv2.calcHist([frame], [0, 1, 2], None, [64, 64, 64], [0, 256, 0, 256, 0, 256])
-        #hist = cv2.normalize(hist, None).flatten()
         hist_data.append(hist)
         fd_data.append(fd)
         cnt += 1
@@ -175,6 +149,16 @@ def calculateHists(keyframes, path, video_fps, cap, downscale):
 
 
 def difference(hist1, hist2, fd1, fd2, fd_norm, hist_norm):
+    """
+    Computes distance between 2 frames
+    :param hist1:
+    :param hist2:
+    :param fd1:
+    :param fd2:
+    :param fd_norm:
+    :param hist_norm:
+    :return:
+    """
     d_h = 1-cv2.compareHist(hist1, hist2, cv2.HISTCMP_INTERSECT)/hist_norm
     #print(d_h)
     #d_d = 1-cv2.compareHist(fd1, fd2, cv2.HISTCMP_INTERSECT)/fd_norm

@@ -3,10 +3,10 @@ import numpy as np
 
 def createDescriptor(method, frame):
     """
-    Generates descriptor for a frame using specified method
+    Generates single descriptor for a frame using specified method
     :param method: Chosen keyframe extraction method
     :param frame: BGR-data of a frame
-    :return descriptor number/vector
+    :return: descriptor number/vector
     """
 
     if method == "crudehistogram":
