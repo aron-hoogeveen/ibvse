@@ -198,9 +198,9 @@ def print_statistics(frame_count, video_fps, keyframes_idx):
 
 
 if __name__ == '__main__':
-    KE_method = "firstlast"
+    KE_method = "VSUMM_combi"
     performSBD = True
-    presample = False
+    presample = True
     kfe_time = time.time()
     keyframes_data, keyframe_indices, video_fps = keyframe_extraction(sys.argv[1], KE_method, performSBD, presample)
     #keyframes_data, keyframe_indices, video_fps = KE_uniform_sampling(sys.argv[1], 9, 0.85)

@@ -10,10 +10,15 @@ from scipy.spatial import distance
 from math import atan2
 
 def fidelity_descriptors(path):
+    '''
+    Generates histogram descriptors to compute fidelity with
+    :param path: video path
+    :return: fd_data, hist_data, fdnorm, histnorm (histogram descriptors along with norms to normalize)
+    '''
     cap = cv2.VideoCapture(path)
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     video_fps = cap.get(cv2.CAP_PROP_FPS)
-    width  = cap.get(cv2.CAP_PROP_FRAME_WIDTH)   # float `width`
+    width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)   # float `width`
     height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
     histnorm = width * height  # to normalize color histogram with
     downscale = 0.5  # downsize frame for lower computation for hogs
@@ -43,23 +48,18 @@ def fidelity_descriptors(path):
     return fd_data, hist_data, fdnorm, histnorm
 
 def fidelity(kf_indices, path, vseq_hists, vseq_hogs, fdnorm, histnorm):
-    """
+    '''
     Computes fidelity for a chosen selection of keyframes
-    """
-    # cap = cv2.VideoCapture(os.path.abspath(os.path.expanduser(sys.argv[1])))
-    # frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    # video_fps = cap.get(cv2.CAP_PROP_FPS)
-    # width  = cap.get(cv2.CAP_PROP_FRAME_WIDTH)   # float `width`
-    # height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-    # histnorm = width*height # to normalize color histogram with
-    # downscale = 0.1 # downsize frame for lower computation for hogs
-    # fdnorm = histnorm*(downscale)**2 # to normalize edge detection histogram
+    :param kf_indices: indices of keyframes
+    :param path: path of video (won't be used here anymore)
+    :param vseq_hists: (color) histograms of all frames in video
+    :param vseq_hogs: (edge) histograms of all frames in video
+    :param fdnorm: norm of edge direction histogram
+    :param histnorm: norm of color histogram (amount of pixels)
+    :return: Fidelity value (within [0, 1])
+    '''
 
-    #decode keyframe indices from video into array
-    #keyframes = keyframes_indices_to_array(kf_indices, path, video_fps, frame_count)
-
-    #calculate histograms
-    #[keyframes_hogs, vseq_hogs, keyframes_hists, vseq_hists] = calculateHists(keyframes, path, video_fps, cap, downscale)
+    # Semi Hausdorff distance
     maxdiff = 1 # maximum value difference() can return
     maxdist = 0
     for i in range(0, len(vseq_hists)):
@@ -73,27 +73,6 @@ def fidelity(kf_indices, path, vseq_hists, vseq_hogs, fdnorm, histnorm):
 
     return maxdiff - maxdist
 
-# def distance_inner(selection, nf, path,  hist_sel, hist_data, maxdiff, fd_sel, fd_data):
-#     difference_list = {}
-#     for i in range(0, len(hist_sel)):
-#         difference_list[i] = difference(hist_sel[i], hist_d, fd_sel[i], fd_d)
-#     #print(difference_list)
-#     #maxdiff = check_maxdifference(difference_list,maxdiff)
-#     distance  = minimalvalue(difference_list)
-#     return distance
-#
-# # def check_maxdifference(array, maxdiff):
-# #     for i in range(1, len(array)):
-# #         if array[i] > maxdiff:
-# #             maxdiff = array[i]
-# #     return maxdiff
-#
-# def minimalvalue(array):
-#     min = array[0]
-#     for i in range(1, len(array)):
-#         if array[i] < min:
-#             min = array[i]
-#     return min
 def calculateHOG(frame, downsize):
     #resize image for computational speed gain
     scale_percent = downsize  # percent of original size
@@ -133,8 +112,6 @@ def calculateHOG(frame, downsize):
 
 def calculateHists(keyframes, path, video_fps, cap, downscale):
     #parameters
-
-
 
     fd_sel = []
     hist_sel = []
