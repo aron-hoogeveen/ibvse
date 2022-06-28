@@ -18,6 +18,7 @@ The system outputs the time stamps, distances and the frame number for the found
 
 
 # Repository organization 
+![alt text](https://github.com/aron-hoogeveen/ibvse/blob/main/pipeline.png?raw=true)
 ## Keyframe Extraction 
 The code for the Keyframe Extraction module can be found in the folder KeyFrameExtraction
 
