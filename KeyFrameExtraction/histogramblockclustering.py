@@ -4,6 +4,12 @@ from scipy.sparse import csc_matrix
 from scipy.sparse.linalg import svds, eigs
 
 def blockclustering(feature_vectors, shot_frame_number):
+    """
+    Clusters each frame into 9 blocks for clustering
+    :param feature_vectors: flatten histogram vectors for each frame
+    :param shot_frame_number: shot index
+    :return: indices
+    """
     minf = 63  # number of singular values and singular vectors to compute (must satisfy 1 <= k <= kmax,
     # where kmax=min(M, N), M = is 1944 (histogram vector for each frame)
     if (len(feature_vectors) < minf):   # for shots with a frame amount smaller than 63

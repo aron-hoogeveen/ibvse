@@ -1,15 +1,13 @@
 import numpy as np
-import time
-import matplotlib.pyplot as plt
 import cv2
 
 
 def histogram_summary(hists, shot_start_number):
     """
-    Generates array of keyframe indices using descriptors
+    Generates array of keyframe indices using descriptors of histgrams using fixed threshold
     :param hists: histogram vectors of frames
     :param shot_start_number: start index of shot
-    :return indices
+    :return: indices
     """
 
     # intersection threshold
@@ -17,7 +15,6 @@ def histogram_summary(hists, shot_start_number):
 
     current_keyframe_hist = hists[0]
     keyframe_indices = [shot_start_number]
-    #print(shot_start_number)
     for i in range(1, len(hists)):
         histdiff = cv2.compareHist(current_keyframe_hist, hists[i], cv2.HISTCMP_BHATTACHARYYA)
 
@@ -25,19 +22,6 @@ def histogram_summary(hists, shot_start_number):
 
             keyframe_indices.append(i+shot_start_number)
             current_keyframe_hist = hists[i]
-
-    #print(keyframe_indices)
-
-    # summary = np.count_nonzero(sumsel == 1)/frame_count
-    # if summary < 0.001:
-    #     print("Compression too high: " + str(1-summary))
-    #     sumsel = histogram_summary(path, threshold-0.1, frame_count)
-    # if summary > 0.1:
-    #     print("Compression too low: " + str(1 - summary))
-    #     sumsel = histogram_summary(path, threshold + 0.09, frame_count)
-    # print("compression: "+ str(1-summary))
-    # print("--- %s seconds ---" % (time.time() - start_time))
-
 
     return keyframe_indices
 
@@ -57,7 +41,7 @@ def first_last(descriptors, shot_start_number):
 
 def first_only(descriptors, shot_start_number):
     # Generates array of indices using the shot index
-    #print('Selecting first frame from shot')
+    print('Selecting first frame from shot')
     indices = [shot_start_number]
     return indices
 
@@ -68,8 +52,6 @@ def shotdependent_sampling(descriptors, shot_start_number):
 def changeIdxFormat(indices, frame_count):
     # Converts the format of keyframe selection from [0, 3, 5 ... ] to [0., 0., 0., 0., 1, 0., 1, ... ]
     print("Converting KF selection [a, b, c, ..., d] to [0, 0, 1, 0 ... 1 ] ")
-    #summary_selections = np.random.random((n_frames, 1)) * 100
-    #val_percentile = np.percentile(summary_selections, compression)
     sumsel = np.zeros([frame_count, 1])
     for keyframe in indices:
         sumsel[keyframe] = 1

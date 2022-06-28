@@ -49,7 +49,7 @@ def keyframe_extraction(video_path, method, performSBD, presample):
     print('>>> Performing Shot Based Detection')
     keyframes_indices = SBD(cap, method, performSBD, presample, video_fps)
 
-    # # Convert [[x,x,x], [x,x,x,x], [x,x,x,x], ... ] to one axis array
+    # Convert [[x,x,x], [x,x,x,x], [x,x,x,x], ... ] to one axis array
     keyframes_idx = []
     for i in range(0, len(keyframes_indices)):
         for j in range(0, len(keyframes_indices[i])):
@@ -74,7 +74,7 @@ def KE_uniform_sampling(video_path, rate, CR):
     :return Indices of keyframes, corresponding rgb-data and video_fps
     """
     # Generates indices and gets the framedata from the video using CAP_PROP_POS
-    # CAP_PROP_POS is only superior to regular reading ad discarding for uniformly sampling if every 21th frame or more
+    # CAP_PROP_POS is only superior to regular reading ad discarding for uniformly sampling if every 21-th frame or more
     # (=1.4fps for a 30fps video) is taken
 
     cap = cv2.VideoCapture(video_path)
@@ -85,7 +85,7 @@ def KE_uniform_sampling(video_path, rate, CR):
 
     method_time = time.time()
 
-    choose_rate = True # set to False for Compression Ratio instead
+    choose_rate = True   # set to False for Compression Ratio instead
 
     if choose_rate:
         skip_num = video_fps / rate # every k-th frame should be taken
@@ -103,6 +103,7 @@ def KE_uniform_sampling(video_path, rate, CR):
 
     return keyframes_data, keyframes_idx, video_fps
 
+
 def fast_uniform_sampling(video_path, rate, CR):
     """
     obsolete script; general KE_uniform_sampling is faster for all rates
@@ -116,7 +117,7 @@ def fast_uniform_sampling(video_path, rate, CR):
     frame_count = cap.get(cv2.CAP_PROP_FRAME_COUNT)
     video_fps = cap.get(cv2.CAP_PROP_FPS)
 
-    choose_rate = True # set to False to use Compression Ratio instead
+    choose_rate = True  # set to False for Compression Ratio instead
     if choose_rate:
         skip_num = video_fps / rate
     else:
@@ -200,7 +201,7 @@ def print_statistics(frame_count, video_fps, keyframes_idx):
 if __name__ == '__main__':
     KE_method = "VSUMM_combi"
     performSBD = True
-    presample = True
+    presample = False
     kfe_time = time.time()
     keyframes_data, keyframe_indices, video_fps = keyframe_extraction(sys.argv[1], KE_method, performSBD, presample)
     #keyframes_data, keyframe_indices, video_fps = KE_uniform_sampling(sys.argv[1], 9, 0.85)
