@@ -1,3 +1,8 @@
+"""
+GUI code for the videoplayer
+If no video is playing make sure the correct codecs are installed. For Windows:
+https://codecguide.com/download_k-lite_codec_pack_basic.htm
+"""
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
