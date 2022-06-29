@@ -1,53 +1,6 @@
-# from PyQt5.QtCore import QDir, Qt, QUrl
-# from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
-# from PyQt5.QtMultimediaWidgets import QVideoWidget
-# from PyQt5.QtWidgets import (QApplication, QFileDialog, QHBoxLayout, QLabel,
-#                              QPushButton, QSizePolicy, QSlider, QStyle, QVBoxLayout, QWidget, qApp)
-# from PyQt5.QtWidgets import QMainWindow, QWidget, QPushButton, QAction
-# from PyQt5.QtGui import QIcon, QCloseEvent
-# import sys
-# import time
-# from gui_videplayer import VideoPlayer
-#
-# class Overview(QMainWindow):
-#     def __init__(self):
-#         super().__init__()
-#         self.setWindowTitle("PyQt5 Video Player")
-#         self.button1 = QPushButton("SOMETHING", self)
-#         self.button2 = QPushButton("SOMETHING ELSE", self)
-#         self.button2.move(100,0)
-#
-#         self.createNewWindow()
-#         self.button1.clicked.connect(self.load1)
-#         self.button2.clicked.connect(self.load2)
-#
-#     def createNewWindow(self):
-#         self.videoplayerWindow = VideoPlayer()
-#         self.videoplayerWindow.resize(640, 480)
-#         self.videoplayerWindow.hide()
-#
-#     def load1(self):
-#         filepath, timestamp = r'E:\2022-01-24 20-39-24.mkv', 2000
-#         if not self.videoplayerWindow.filepath:
-#             self.videoplayerWindow.newVid(filepath, timestamp)
-#         else:
-#             print('oi')
-#
-#     def load2(self):
-#         filepath, timestamp = r'E:\2022-01-20 13-46-44.mkv', 1000
-#         if self.videoplayerWindow.filepath == filepath:
-#             self.videoplayerWindow.newTimestamp(timestamp)
-#         else:
-#             self.videoplayerWindow.newVid(filepath, timestamp)
-#
-# app = QApplication(sys.argv)
-# videoplayer = Overview()
-# # videoplayer = VideoPlayer(r'E:\2022-01-24 20-39-24.mkv',2000)
-#
-# videoplayer.show()
-# sys.exit(app.exec_())
-
-import time
+"""
+This file contains all the GUI utility
+"""
 import os
 import sys
 from PyQt5.QtWidgets import (QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QPlainTextEdit, QApplication,
@@ -55,16 +8,16 @@ from PyQt5.QtWidgets import (QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QPl
 import prototype_main
 from PyQt5.QtGui import QIcon
 import PyQt5.QtCore as QtCore
-import gui_videplayer
+from GUI import gui_videoplayer
 
 
-class Window(QWidget):
+class InputWindow(QWidget):
     def __init__(self, parent=None):
         """
         Initializer for the class that creates the GUI window
         """
         super().__init__(parent)
-        self.setWindowIcon(QIcon(r'./logo.png'))
+        self.setWindowIcon(QIcon(r'GUI/logo.png'))
         self.timeslots = []
         self.layout = QVBoxLayout()
         self.setGeometry(150, 150, 750, 400)
@@ -196,7 +149,7 @@ class Window(QWidget):
         """
 
         input_error = QMessageBox()
-        input_error.setWindowIcon(QIcon(r'./logo.png'))
+        input_error.setWindowIcon(QIcon(r'GUI/logo.png'))
         input_error.setIcon(QMessageBox.Information)
         input_error.setText(f"A problem occurred on starting the search.")
         informative_text = f"Please make sure that the the following inputs are provided:\n\n"
@@ -208,6 +161,10 @@ class Window(QWidget):
         input_error.exec_()
 
     def restore(self):
+        """
+        Resotre the input window to its original state
+        :return:
+        """
         self.show()
         self.setEnabled(True)
         self.start_button.setText("Start the Search")
@@ -219,7 +176,7 @@ class OutputWindow(QWidget):
         Initializer for the class that creates the GUI window
         """
         super().__init__(parent)
-        self.setWindowIcon(QIcon(r'./logo.png'))
+        self.setWindowIcon(QIcon(r'GUI/logo.png'))
         self.setWindowTitle("BAP group H | Image-Based Video Search Engine")
         self.cutoffvalue = 113
         self.timeslots = []
@@ -230,32 +187,35 @@ class OutputWindow(QWidget):
         self.layout = QVBoxLayout()
         self.setGeometry(150, 150, 500, 600)
         self.layout.setContentsMargins(10, 10, 10, 10)
+        # tabs object to add a tab per video
         self.tab = QTabWidget()
-
+        # button for  a new search
         self.returnBtn = QPushButton("New Search")
         self.returnBtn.clicked.connect(self.return_to_main)
-
+        # slider for the accuracy/amount of results tradeoff
         self.slider = QSlider(QtCore.Qt.Horizontal)
         self.slider.setMinimum(0)
         self.slider.setMaximum(300)
         self.slider.setValue(self.cutoffvalue)
         self.slider.sliderReleased.connect(self.init_gui)
+        self.sliderinfo = QLabel("Filter strength \n<= More accurate\t\t\tMore results =>")
+        self.sliderinfo.setAlignment(QtCore.Qt.AlignCenter)
 
+        # neat little divider
         divider = QFrame()
         divider.setFrameShape(QFrame.HLine)
         divider.setFrameShadow(QFrame.Sunken)
 
-        self.sliderinfo = QLabel("Filter strength \n<= More accurate\t\t\tMore results =>")
-        self.sliderinfo.setAlignment(QtCore.Qt.AlignCenter)
+        # add everything to the layout
         self.layout.addWidget(self.tab)
         self.layout.addWidget(self.sliderinfo)
         self.layout.addWidget(self.slider)
         self.layout.addWidget(divider)
         self.layout.addWidget(self.returnBtn)
-
         self.setLayout(self.layout)
-        self.videoplayer = gui_videplayer.VideoPlayer()
-        print(self.videos)
+
+        # create the videoplayer
+        self.videoplayer = gui_videoplayer.VideoPlayer()
         self.init_gui()
 
     def init_gui(self):
@@ -263,43 +223,59 @@ class OutputWindow(QWidget):
         Build the GUI
         :return: The GUI
         """
-        print(self.cutoffvalue)
         self.cutoffvalue = self.slider.value()
-        print(self.cutoffvalue)
         self.fill_reports()
 
     def fill_reports(self):
-        tabs_to_add = len(self.videos)
+        """
+        Creates tabs with content
+        :return:
+        """
+        tabs_to_add = len(self.videos)  # number of tabs = number of videos
         if self.tab.count() != 0:
             self.tab.clear()
-        for i in range(tabs_to_add):
+        for i in range(tabs_to_add):  # for each video create tab
             tabtoadd = self.create_tabs(self.tab, i, self.videos[i], self.images, self.videoplayer)
-            for idx, image in enumerate(self.images):
+            for idx, image in enumerate(self.images):  # for each query image list the occurrences
                 timestamps = []
                 tabtoadd.tb.append(f"<font size='+2'><b>Input image: {os.path.split(image)[-1]}<br></font></b>")
                 matches = False
                 for timestamp, dist in zip(self.output_data[i][idx][0], self.output_data[i][idx][1]):
-                    if dist > (self.cutoffvalue / 100):
+                    if dist > (self.cutoffvalue / 100):  # filter the results
                         break
                     matches = True
                     timestamps.append(timestamp)
+                    # add the result to the textbox
                     tabtoadd.tb.append(f"      Occurence at:  "
                                        f"{str(int(round(timestamp // 3600))).zfill(2)}:"
                                        f"{str(int(round((timestamp % 3600) // 60))).zfill(2)}:"
                                        f"{str(int(round((timestamp % 3600) % 60))).zfill(2)}")
                 if not matches:
                     tabtoadd.tb.append(f"      No occurrences were found\n")
-                else:
+                else:  # If there are occurences add them to the image/timestamp selector for the videoplayer
                     tabtoadd.cb_image.addItem(os.path.split(image)[-1], timestamps)
                     tabtoadd.update_cb_timestamp(tabtoadd.cb_image.currentIndex())
                 tabtoadd.tb.append("\n")
 
     def create_tabs(self, obj, num, video, images, videoplayer):
+        """
+        Function to create the tabs
+        :param obj: The QTabWidget object
+        :param num: The tab number
+        :param video: The list of videos
+        :param images: The list of images
+        :param videoplayer: Videoplayer object reference
+        :return: The tab with default layout/contents
+        """
         tab_to_add = PageWidget(num, video, images, videoplayer)
         obj.addTab(tab_to_add, os.path.split(self.videos[num])[-1])
         return tab_to_add
 
     def return_to_main(self):
+        """
+        Function to go back to the input window
+        :return:
+        """
         self.hide()
         self.mainwindow.restore()
 
@@ -307,34 +283,42 @@ class OutputWindow(QWidget):
 class PageWidget(QWidget):
     def __init__(self, num, video, images, videoplayer, parent=None):
         super().__init__(parent)
-
+        # set parameters
         self.videoplayer = videoplayer
         self.video = video
         self.images = images
+
+        # Create textbox
         self.tb = QTextBrowser(self)
         self.tb.setFrameShape(QFrame.Box)
         self.tb.setGeometry(QtCore.QRect(10, 10, 400, 500))
         self.tb.setObjectName(str(num))
 
-        self.sublayout = QHBoxLayout()
+        # Create combination of widgets to select and image and timestamp
         self.cb_image = QComboBox()
+        self.cb_image.currentIndexChanged.connect(self.update_cb_timestamp)
         self.cb_timestamp = QComboBox()
         self.confirmbtn = QPushButton("Play")
         self.confirmbtn.setEnabled(False)
         self.confirmbtn.clicked.connect(self.play_video)
-
+        # Add the widgets to a layout
+        self.sublayout = QHBoxLayout()
         self.sublayout.addWidget(self.cb_image)
         self.sublayout.addWidget(self.cb_timestamp)
         self.sublayout.addWidget(self.confirmbtn)
 
-        self.cb_image.currentIndexChanged.connect(self.update_cb_timestamp)
-
+        # Add everything to the overall layout of the tab
         self.layout = QVBoxLayout()
         self.layout.addLayout(self.sublayout)
         self.layout.addWidget(self.tb)
         self.setLayout(self.layout)
 
     def update_cb_timestamp(self, index):
+        """
+        Updates the combo box for the timestamps when a different image is selected
+        :param index: the index corresponding to the selected image
+        :return: Changes the combobox of the timestamps
+        """
         self.cb_timestamp.clear()
         self.confirmbtn.setEnabled(True)
         timestamps = self.cb_image.itemData(index)
@@ -344,23 +328,30 @@ class PageWidget(QWidget):
             self.cb_timestamp.addItems(timestamps)
 
     def play_video(self):
+        """
+        Opens the videoplayer at the correct timestamp
+        :return: a new window with the videoplayer
+        """
+        # get the videofile and timestamp from the combobox
         file, timestamp = os.path.abspath(self.video), float(self.cb_timestamp.currentText()) * 1000
         image_path = None
+        # Get the correct image path by comparing the file name from the filepath with the name in the combobox
         for image in self.images:
             image_name = os.path.split(image)[-1]
             if image_name == self.cb_image.currentText():
                 image_path = image
                 break
-        print(image_path)
-        assert image_path is not None
-        # path is wrong, compare only the last part (aka the video name)
-        if not self.videoplayer.filepath:
+
+        assert image_path is not None  # Protection against invalid image path
+
+        if not self.videoplayer.filepath: # if there is no video open a new video
             self.videoplayer.newVid(file, timestamp)
-        elif self.videoplayer.filepath == file:
+        elif self.videoplayer.filepath == file: # else check if the video was already opened, if so update timestamp
             self.videoplayer.newTimestamp(timestamp)
-        else:
+        else:  # else open the new video
             self.videoplayer.newVid(file, timestamp)
 
+        # displays the correct image
         if not self.videoplayer.image:
             self.videoplayer.new_image(image_path)
         elif image_path != self.videoplayer.image:
@@ -370,6 +361,6 @@ class PageWidget(QWidget):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
-    ex = Window()
+    ex = InputWindow()
     ex.show()
     sys.exit(app.exec_())
