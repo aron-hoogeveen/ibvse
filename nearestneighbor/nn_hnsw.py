@@ -1,3 +1,7 @@
+"""
+Image based video search engine: prototype
+This file contains the HNSW implementation for NNS
+"""
 import time
 import hnswlib
 

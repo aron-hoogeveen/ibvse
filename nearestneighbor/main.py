@@ -1,3 +1,7 @@
+"""
+Image based video search engine: prototype
+This file contains the final implementation of the DC & NNS module.
+"""
 import sys
 import os
 import numpy as np

@@ -1,3 +1,7 @@
+"""
+Image based video search engine: prototype
+This file contains the ANNOY implementation for NNS
+"""
 import annoy
 import numpy as np
 import time
