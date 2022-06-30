@@ -1,9 +1,9 @@
 # Image Based Video Search Engine 
 
-The Image Based Video Search Engine was developed for the BSc graduation project of group H. The project conists of a search engine that finds an instance of an object in query image(s) in a set of query videos. 
+This Image Based Video Search Engine was developed for the Electrical Engineering BSc graduation project of the TU Delft by group H of academic year 2021-2022. The project consists of a search engine that can find instances of an object in a set of query videos, based on a set of query images containing the object to be found. 
 
 # Running the system
-## Installations 
+## Installation 
 To run the system, first clone the repository. To install the correct packages, change directory to the folder that contains the enviroment.yml file and install the enviroment by using the following command
 ```
 conda env create
@@ -13,21 +13,24 @@ Next, download the solar global model that can be found [here](https://imperialc
 ../ibvse/featureextraction/solar/data/networks/
 ``` 
 
-Finally, if you want to make use of the videoplayer in the GUI, make sure you have the correct codecs installed. For Windows users, the K-Lite Codec Pack Basic can be downloaded [here](https://codecguide.com/download_k-lite_codec_pack_basic.htm) and provides the codecs for all common audio and video formats. The  
+Finally, if you want to make use of the videoplayer in the GUI, make sure you have the correct codecs installed. For Windows users, the K-Lite Codec Pack Basic can be downloaded [here](https://codecguide.com/download_k-lite_codec_pack_basic.htm) and provides the codecs for all common audio and video formats. 
 
 ## Running the code
 ### Terminal
-The system can be ran in terminal by calling the file prototype_main.py with the following command
+The system can be ran in terminal by calling the file prototype_main.py with the following command:
 ```
-usage: prototype_main.py [-h] input_videos [input_videos ...] input_images [input_images ...]
+prototype_main.py [-h] input_videos [input_videos ...] input_images [input_images ...]
 
 ```
 Where the arguments are the corresponding paths to the video and image files. <br /> 
 The system prints the timings of the system in terminal and returns the timestamp and distances corresponding to the search. 
 
 ### GUI
-To run the program with the GUI, run python gui_main.py without any argyments. <br /> 
-After inputting the video(s) and image(s) the system will open a new window that shows the results for each video and image. By selecting an image and timestamp and pressing the play button a videoplayer will open to show the found result (If the correct codecs are installed). Additionally a slider is provided to tweak the results.
+To run the program with the GUI, run:
+```
+python gui_main.py
+```
+This will open a GUI where the video(s) and image(s) to be searched can be entered manually. After inputting the video(s) and image(s) the system will open a new window that shows the results for each video and image. By selecting an image and timestamp and then pressing the play button, a video player will open to show the found result (If the correct codecs are installed). Additionally, a slider is provided to tweak the results.
 
 
 # Repository organization 
@@ -40,11 +43,15 @@ The Feature Extraction module uses the SOLAR global model to extract the feature
 The code for the Feature Extraction  module can be found in the folder featurextraction
 
 ## Data Compression and Nearest Neighbour Search
-The Data Compression and Nearest Neighbour Search module finds the closest matches between the feature vectors of the keyframes and query images. Multiple methods are implemented and a selector selects the most optimal method (of the implemented methods) based on the amount of keyframes and query images. To test the module as a standalone, extract the feautures of a dataset (the one used for this project was [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html)) using any model (the one used for this project was resnet-18). The extracted feautres should be saved to numpy files with the following names: 
+The Data Compression and Nearest Neighbour Search module finds the closest matches between the feature vectors of the keyframes and those of the query images. Multiple methods are implemented and a selector selects the most optimal method (of the implemented methods) based on the amount of keyframes and query images. To test the module as a standalone, extract the features of a dataset (the one used for this project was [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html)) using any model (the one used for this project was resnet-18). The extracted features should be saved to numpy files in the folder:
+```
+../ibvse/nearestneighbor/data/
+```
+The files should have the following names: 
 ```
 frames.npy          # The training data (majority of the dataset)
 frame_labels.npy    # The labels of the training data (majority of the dataset)
 images.npy          # The test data (minority of the dataset)
 image_labels.npy    # The labels of the test data (minority of the dataset)
 ```
-The code for the Data Compression and Nearest Neighbour Search module can be found in the folder nearestneighbor
+The code for the Data Compression and Nearest Neighbour Search module can be found in the folder /nearestneighbor.
