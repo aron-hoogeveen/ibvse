@@ -36,6 +36,7 @@ This will open a GUI where the video(s) and image(s) to be searched can be enter
 # Repository organization 
 ## Keyframe Extraction 
 The Keyframe Extraction module aims to reduce the amount of frames that need to be evaluated by the rest of the system. This allows for drastically reducing the overall time for the Feature Extraction module since it only needs to extract the features of a small set of images. <br />
+In this part of code, a few methods of keyframe extraction are available along with the option to presample the video (to decrease execution time) or to divide the video into shots first (Shot based detection).
 The code for the Keyframe Extraction module can be found in the folder KeyFrameExtraction
 
 ## Feature Extraction 
