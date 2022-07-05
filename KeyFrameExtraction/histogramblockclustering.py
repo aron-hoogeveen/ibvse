@@ -12,7 +12,7 @@ def blockclustering(feature_vectors, shot_frame_number):
     """
     minf = 63  # number of singular values and singular vectors to compute (must satisfy 1 <= k <= kmax,
     # where kmax=min(M, N), M = is 1944 (histogram vector for each frame)
-    if (len(feature_vectors) < minf):   # for shots with a frame amount smaller than 63
+    if (len(feature_vectors) < minf+1):   # for shots with a frame amount smaller than 63
         minf = len(feature_vectors)-1 # scale minf down to the amount of frames -1
     strminf = "v" + str(minf+1)
     arr = np.empty((0, 1944), int)  # initializing 1944 dimensional array to store 'flattened' color histograms
