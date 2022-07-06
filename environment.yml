@@ -13,7 +13,7 @@ dependencies:
   - future=0.18.2
   - tensorboard>=2.0.0
   - pandas=1.4.3
-  - faiss=1.7.2=py39cuda112h0c3d3c9_0_cuda
+  - faiss=1.7.2
   - imageio=2.19.3
   - scikit-learn=1.1.1
   - scikit-image=0.19.3
