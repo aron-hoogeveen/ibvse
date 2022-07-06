@@ -9,6 +9,7 @@ def main():
     np.set_printoptions(linewidth=np.inf)
     base_dir = os.path.abspath('Demo-images-and-videos')
     try:
+        # Downloads the dataset stored on MEGA
         print(">>> Downloading dataset for demo")
         assert not os.path.exists(os.path.join(base_dir,'Demo_dataset_ibvse.zip'))
         mega = Mega()
@@ -22,28 +23,29 @@ def main():
         with ZipFile(os.path.abspath('Demo-images-and-videos/Demo_dataset_ibvse.zip'), 'r') as zipObj:
             zipObj.extractall(os.path.abspath('Demo-images-and-videos'))
 
-    except AssertionError:
+    except AssertionError: # If already downloaded then stop downloading
         print('Content is already downloaded. Aborting the download')
 
     print(">>> Starting demo")
+    # Find all videos and images
     videos = [os.path.join(base_dir, 'Battuta1.mp4'),
               os.path.join(base_dir, 'He1.mp4'),
               os.path.join(base_dir, 'Polo1.mp4')]
     images1 = [os.path.join(base_dir, os.path.join('Batutta1', file)) for file in os.listdir(os.path.join(base_dir, 'Batutta1'))]
     images2 = [os.path.join(base_dir, os.path.join('He1', file)) for file in os.listdir(os.path.join(base_dir, 'He1'))]
     images3 = [os.path.join(base_dir, os.path.join('Polo1', file)) for file in os.listdir(os.path.join(base_dir, 'Polo1'))]
-
     all_images = images1 + images2 + images3
 
-    res = prototype_main.main(False, videos, all_images)
+    # using histogramblockclustering to get the same extracted keyframes every run.
+    # Normally VSUMM combi is used, but for that the keyframes may differ across runs
+    res = prototype_main.main(False, videos, all_images, kfe_method='histogramblockclustering')  # perform the search
 
-    # with open(os.path.join(base_dir,'demo_ref.pkl'), 'wb') as file:
-    #     pickle.dump(res, file)
-
+    # load the reference results
     with open(os.path.join(base_dir,'demo_ref.pkl'), 'rb') as file:
         ref_res = pickle.load(file)
 
     mistakes = 0
+    # Compare the reference results to the obtained results
     with open(os.path.join(base_dir,'demo_deviations.txt'),'w') as file_deviations, \
             open(os.path.join(base_dir,'demo_results.txt'),'w') as file_results :
         file_results.write("These are the timestamps and distances returned by the engine. The results are listed per video and query combination.\n"
@@ -56,7 +58,7 @@ def main():
                                    f'\n Result:\t{res[i][j][0]}\t{res[i][j][1]}'
                                    f'\n Reference:\t{ref_res[i][j][0]}\t{ref_res[i][j][1]}\n\n')
                 try:
-                    assert (ref_res[i][j][0].astype(int) == res[i][j][0].astype(int)).all()
+                    assert (ref_res[i][j][0].astype(int) == res[i][j][0].astype(int)).all()  # check of the results
                 except AssertionError:
                     mistakes += 1
                     file_deviations.write(f'A deviation from the reference result was found for Video {os.path.split(videos[i])[-1]} '
@@ -65,9 +67,8 @@ def main():
 
     print(f'>>> Results of demo\n'
           f'A total of {mistakes} deviations were found out of the {len(ref_res)*len(ref_res[0])} evaluations\n'
-          f'The file demo_deviations.txt holds the information on the deviations\n'
-          f'The file demo_results.txt holds all the information of the results\n\n'
-          f'The fewer deviations the better, but due to ')
+          f'The file "Demo-Images-and-videos/demo_deviations.txt" holds the information on the deviations\n'
+          f'The file "Demo-Images-and-videos/demo_results.txt" holds all the information of the results\n\n')
 
 
 
