@@ -7,6 +7,11 @@ from mega import Mega
 
 
 def main():
+    """
+    Demo script for the Image-based Video Search Engine. It downloads a small dataset and runs the engine.
+    The obtained output is compared to the reference output and the deviations are listed
+    :return: 2 files with the information on the results of the demo
+    """
     np.set_printoptions(linewidth=np.inf)
     base_dir = os.path.abspath('Demo-images-and-videos')
     try:
@@ -57,8 +62,8 @@ def main():
                            "For each of these combinations the obtained result and reference result are listed.\n"
                            "The first list contains the timestamp and the second one the distances\n\n")
         file_deviations.write("These are the deviations that occured from the reference results\n\n")
-        for i in range(len(ref_res)):
-            for j in range(len(ref_res[i])):
+        for i in range(len(ref_res)):  # for every query video
+            for j in range(len(ref_res[i])):  # for every query image
                 file_results.write(f'Video {os.path.split(videos[i])[-1]} and Image {os.path.split(all_images[j])[-1]}'
                                    f'\n Result:\t{res[i][j][0]}\t{res[i][j][1]}'
                                    f'\n Reference:\t{ref_res[i][j][0]}\t{ref_res[i][j][1]}\n\n')
