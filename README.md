@@ -4,7 +4,7 @@ This Image Based Video Search Engine was developed for the Electrical Engineerin
 
 # Running the system
 ## Installation 
-To run the system, first clone the repository. To install the correct packages, change directory to the folder that contains the enviroment.yml file and install the enviroment by using the following command
+To run the system, first clone the repository. To install the correct packages, change directory to the folder that contains the environment.yml file and install the environment by using the following command
 
 ```
 conda env create
@@ -20,11 +20,14 @@ Finally, if you want to make use of the videoplayer in the GUI, make sure you ha
 
 ## Running the code
 ### Demo
-A demo of the code can be ran by calling the file demo.py with the following command:
+A demo of the code can be run by calling the file demo.py with the following command:
+
 ```
 python demo.py
 ```
-The demo will automatically download a small dataset from MEGA. The dataset can also be download from [here](https://mega.nz/file/ejICQS5A#zunX-XdB_-V5e6MgoCcr6frrH44Yds_lPVYXuquQlzw). If you choose to download the dataset manually. Move it to the folder 'Demo-Images-and-videos' and unzip it in that folder. The file tree should look like this:
+
+The demo will automatically download a small dataset from MEGA. The dataset can also be downloaded from [here](https://mega.nz/file/ejICQS5A#zunX-XdB_-V5e6MgoCcr6frrH44Yds_lPVYXuquQlzw). If you choose to download the dataset manually, move it to the folder 'Demo-Images-and-videos' and unzip it in that folder. The file tree should look like this:
+
 ```
 Demo-images-and-videos/
 ├─ Batutta1/
@@ -38,11 +41,12 @@ Demo-images-and-videos/
 ├─ He1.mp4
 ├─ Polo1.mp4
 ```
+
 The demo will print the amount of deviations found as well as where the results of the demo can be found.
 
 
 ### Terminal
-The system can be ran in terminal by calling the file prototype_main.py with the following command:
+The system can be run in terminal by calling the file prototype_main.py with the following command:
 
 ```
 prototype_main.py [-h] input_videos [input_videos ...] input_images [input_images ...]
