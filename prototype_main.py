@@ -35,14 +35,15 @@ def parse_args():
     return args
 
 
-def main(use_args, input_videos: [str], input_images: [str]):
+def main(use_args, input_videos: [str], input_images: [str], kfe_method: str = 'VSUMM_combi'):
     """
     The Image Based Video Search Engine main body according to the pipeline of:
     Keyframe Extraction => Feature Extraction => Nearest Neighbour Search
 
-    :use_args use the commandline arguments
+    :param use_args use the commandline arguments
     :param input_videos: A list of the paths to the input videos
     :param input_images: A list of the paths to the input images
+    :param kfe_method: Optional choice of kfe_method
     :return: The timestamp and distance per video and per query image. The structure is a list that contains a list per
              video. This list contains lists with the data for each image corresponding to that video.
              Example: [[[Video1_Image1_data],[Video1_Image2_data]], [[Video2_Image1_data],[Video2_Image2_data]]]
@@ -88,7 +89,7 @@ def main(use_args, input_videos: [str], input_images: [str]):
 
     for input_video in input_videos:
         kfe_start_time = time.time()
-        keyframes_data, indices, fps = keyframe_extraction(input_video, 'VSUMM_combi', True, True)
+        keyframes_data, indices, fps = keyframe_extraction(input_video, kfe_method, True, True)
         indices = np.array(indices)
         kfe_end_time = time.time()
 

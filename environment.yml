@@ -8,13 +8,12 @@ dependencies:
   - torchvision=0.13.0
   - torchaudio=0.12.0
   - cudatoolkit=11.3
-  - matplotlib=3.5.2
   - numpy=1.23.0
   - tqdm=4.64
   - future=0.18.2
   - tensorboard>=2.0.0
   - pandas=1.4.3
-  - faiss=1.7.2=py39cuda112h0c3d3c9_0_cuda
+  - faiss-gpu=1.7.2
   - imageio=2.19.3
   - scikit-learn=1.1.1
   - scikit-image=0.19.3
@@ -27,3 +26,5 @@ dependencies:
       - argparse==1.4.0
       - opencv-python==4.6.0.66
       - PyQt5==5.15.7
+      - matplotlib==3.5.2
+      - mega.py==1.0.8
