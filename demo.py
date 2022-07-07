@@ -31,10 +31,12 @@ def main():
         pass
 
     finally:
+        # Extract the downloaded zip folder
         print('>>> Extracting the zip file...')
         with ZipFile(os.path.abspath('Demo-images-and-videos/Demo_dataset_ibvse.zip'), 'r') as zipObj:
             zipObj.extractall(os.path.abspath('Demo-images-and-videos'))
         print('>>> Extracted!')
+
 
     print(">>> Starting demo")
     # Find all videos and images

@@ -105,21 +105,3 @@ def method_selector(n_frames_inter, n_queries_inter, use_indices = False):
     # convert index to a method name
     methods = ["linear", "faiss_flat_cpu", "faiss_flat_gpu", "faiss_hnsw", "faiss_lsh","faiss_ivf"]
     return interp_res if use_indices else methods[interp_res]
-
-# WHAT TO DO WITH THESE?
-# frames = np.load(r".\data\frames.npy")
-# images = np.load(r".\data\images.npy")
-# frame_labels = np.load(r".\data\frames_labels.npy")
-# labels = np.load(r".\data\images_labels.npy")
-#
-# t1 = time.time()
-# nns_res, dist, method = nns(frames,images)
-# print(f"Time: {time.time()-t1}")
-# print(cal_mAP(nns_res, frame_labels, labels))
-# print(cal_recall(nns_res, frame_labels, labels))
-#
-# print(f"Method:{method}")
-# print(f"result: {frame_labels[nns_res]}")
-# print(f"distances: {dist}")
-# print(labels)
-# print(len(nns_res[0]))
